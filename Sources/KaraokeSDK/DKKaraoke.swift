@@ -9,30 +9,28 @@ import Foundation
 import Combine
 import Alamofire
 
-public class DKKaraoke {
+open class DKKaraoke {
     /// シングルトン
     public static let shared: DKKaraoke = DKKaraoke()
     /// 接続用のQRコード
-    static var qrCode: String?
+    public internal(set) var qrCode: String?
     /// 固有ID
-    static var cdmNo: String?
+    public internal(set) var cdmNo: String?
     /// タスク管理
-    static var task = Set<AnyCancellable>()
+    var task = Set<AnyCancellable>()
     /// キュー
     let queue: DispatchSemaphore = DispatchSemaphore(value: 1)
     /// JSONDecoder
-    static let decoder: JSONDecoder = {
+    let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
     
     /// リクエスト送信
-    internal static func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, AFError> {
+    internal func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, AFError> {
         do {
-            guard let cdmNo = cdmNo, let qrCode = qrCode else {
-                throw NSError(domain: "No cdmNo or qrCode", code: 401, userInfo: nil)
-            }
             let request = try request.asURLRequest(cdmNo: cdmNo, qrCode: qrCode)
             return AF.request(request)
                 .validate()
@@ -49,15 +47,15 @@ public class DKKaraoke {
     }
     
     /// ペアリング
-    public static func connect(qrCode: String) {
+    public func connect(qrCode: String) {
         self.qrCode = qrCode
     }
     
     /// サインイン
-    public static func signIn(damtomoId: String, password: String) -> AnyPublisher<Bool, AFError> {
+    public func signIn(damtomoId: String, password: String) -> AnyPublisher<Bool, AFError> {
         let request = Login(damtomoId: damtomoId, password: password)
-        return Future { promise in
-            DKKaraoke.publish(request)
+        return Future { [self] promise in
+            publish(request)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                         case .finished:
@@ -66,6 +64,7 @@ public class DKKaraoke {
                             promise(.failure(error))
                     }
                 }, receiveValue: { response in
+                    print(response)
                     self.cdmNo = response.cdmNo
                 })
                 .store(in: &task)
@@ -74,8 +73,8 @@ public class DKKaraoke {
     }
     
     /// コマンド送信
-    public static func command(command: DKCommand) -> AnyPublisher<Command.Response, AFError> {
+    public func command(command: DKCommand) -> AnyPublisher<Command.Response, AFError> {
         let request = Command(command: command)
-        return DKKaraoke.publish(request)
+        return publish(request)
     }
 }
