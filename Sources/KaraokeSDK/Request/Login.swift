@@ -25,45 +25,20 @@ public final class Login: RequestType {
             "osVer": "15.1.1"
         ]
     }
+    
+    func asURLRequest(cdmNo: String?, qrCode: String?) throws -> URLRequest {
+        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+        request.httpMethod = method.rawValue
+        request.timeoutInterval = TimeInterval(5)
+        return try encoding.encode(request, with: parameters)
+    }
+    
     public struct Response: Codable {
         let cdmNo: String
         let damtomoId: String
         let deviceId: String
-        let myContents: Content
-        
-        struct Content: Codable {
-            let myHistoryList: [SongInfo]
-            let myList1TagName: String
-            let myList1List: [SongInfo]
-            let myList2TagName: String
-            let myList2List: [SongInfo]
-            let myList3TagName: String
-            let myList3List: [SongInfo]
-            let myList4TagName: String
-            let myList4List: [SongInfo]
-            
-            struct SongInfo: Codable {
-                let artistId: String
-                let artistKana: String
-                let artistName: String
-                let distEnd: String
-                let distStart: String
-                let firstBars: String
-                let funcAnimePicture: String
-                let funcPersonPicture: String
-                let funcScore: String
-                let indicationMonth: String
-                let myKey: String
-                let myListNo: String
-                let orgKey: String
-                let programTitle: String
-                let registerDate: String
-                let reqNo: String
-                let songKana: String
-                let songName: String
-                let titleFirstKana: String
-                let updateLockKey: String
-            }
-        }
+        let osVer: String
+        let result: String
+        let serialNo: String
     }
 }
