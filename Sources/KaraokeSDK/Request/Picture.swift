@@ -16,16 +16,18 @@ public final class Picture: RequestType {
     var path: String = "DkDamPictureSendServlet"
     var parameters: Parameters
 
-    init(image: UIImage, sendType: SendType) {
+    init(image: UIImage?) {
         self.parameters = [
-            "sendType": sendType.rawValue,
-            "pictureData": image.jpegData(compressionQuality: 1.0)!.base64EncodedString(options: .lineLength64Characters)
+            "sendType": "1",
+            "pictureData": image.asPictureData()
         ]
     }
     
-    public enum SendType: Int, CaseIterable, Codable {
-        case send   = 1
-        case delete = 2
+    init() {
+        self.parameters = [
+            "sendType": "2",
+            "pictureData": ""
+        ]
     }
     
     public struct Response: Codable {
@@ -62,5 +64,33 @@ public final class Picture: RequestType {
         public let equip7: String
         public let equip8: String
         public let equip9: String
+    }
+}
+
+fileprivate extension Optional where Wrapped == UIImage {
+    func asPictureData() -> String {
+        let uiImageView = UIImageView()
+        uiImageView.frame.size = CGSize(width: 1920, height: 1080)
+        uiImageView.contentMode = .scaleAspectFit
+        uiImageView.backgroundColor = .black
+        if let image = self {
+            uiImageView.image = image
+        }
+        let image = uiImageView.asUIImage()
+        guard let pictureData = image.jpegData(compressionQuality: 1.0)?.base64EncodedString(options: .lineLength64Characters) else {
+            return ""
+        }
+        return pictureData
+    }
+}
+
+fileprivate extension UIView {
+    func asUIImage() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        layer.render(in: context)
+        let capturedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return capturedImage
     }
 }

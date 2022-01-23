@@ -213,8 +213,8 @@ open class DKKaraoke {
     }
     
     /// 画像送信
-    public func sendPicture(image: UIImage, sendType: Picture.SendType) -> AnyPublisher<Picture.Response, AFError> {
-        let request = Picture(image: image, sendType: sendType)
+    public func sendPicture(image: UIImage) -> AnyPublisher<Picture.Response, AFError> {
+        let request = Picture(image: image)
         return publish(request)
     }
 }

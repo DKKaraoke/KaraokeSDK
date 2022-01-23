@@ -11,19 +11,21 @@ public enum Result {
     public enum Login: String, CaseIterable, Codable {
         /// ログイン成功
         case success    = "DAM_CONNECT_OK"
+        /// ログイン失敗
+        case failure    = "DAM_CONNECT_ERROR"
         /// QRコード有効期限切れ
-        case failure    = "DAM_QR_VALID_TIMEOUT"
+        case timeout    = "DAM_QR_VALID_TIMEOUT"
         /// ペアリングタイムアウト
-        case timeout    = "DAM_PAIRING_TIMEOUT"
+        case pairing    = "DAM_PAIRING_TIMEOUT"
     }
     
     public enum Logout: String, CaseIterable, Codable {
         /// ログアウト成功
         case success    = "DAM_SEPARATE_OK"
         /// QRコード有効期限切れ
-        case failure    = "DAM_QR_VALID_TIMEOUT"
+        case timeout    = "DAM_QR_VALID_TIMEOUT"
         /// ペアリングタイムアウト
-        case timeout    = "DAM_PAIRING_TIMEOUT"
+        case pairing    = "DAM_PAIRING_TIMEOUT"
     }
     
     public enum Remocon: String, CaseIterable, Codable {

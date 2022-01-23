@@ -16,12 +16,12 @@ public extension DataRequest {
                 let decoder: JSONDecoder = JSONDecoder()
                 if let data = data {
                     if let failure = try? decoder.decode(ValidationModel.Login.self, from: data),
-                       failure.result == .failure
+                       (failure.result == .failure || failure.result == .timeout)
                     {
                         throw AFError.responseValidationFailed(reason: .customValidationFailed(error: DKError.loginFailedError(failure)))
                     }
                     if let failure = try? decoder.decode(ValidationModel.Logout.self, from: data),
-                       failure.result == .failure
+                       (failure.result == .pairing || failure.result == .timeout)
                     {
                         throw AFError.responseValidationFailed(reason: .customValidationFailed(error: DKError.logoutFailedError(failure)))
                     }
