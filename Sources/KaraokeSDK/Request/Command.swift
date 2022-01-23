@@ -17,18 +17,14 @@ public final class Command: RequestType {
 
     init(command: DKCommand) {
         self.parameters = [
-            "deviceId": "xs6I/zA4FzO/kc8P5PlgjIos03G0ayyg7eAp079lzmI=",
-            "appVer": "3.3.4.1",
             "remoconCode": command.rawValue,
-            "deviceNm": "iPhone 14 Pro Max",
-            "osVer": "15.1.1"
         ]
     }
     
     public struct Response: Codable {
         public let QRcode: String
+        public let appVer: String
         public let cdmNo: String
-        public let damtomoId: String
         public let deviceId: String
         public let deviceNm: String
         public let lastSendTerm: String
@@ -52,6 +48,8 @@ public enum DKCommand: String, CaseIterable {
     case keyplus        = "04"
     /// キー-
     case keyminus       = "05"
+    /// ルビ
+    case unknown        = "06"
     /// テンポ+
     case tempoplus      = "20"
     /// テンポ-
@@ -70,6 +68,8 @@ public enum DKCommand: String, CaseIterable {
     case pause          = "1B"
     /// 早戻し
     case backward       = "1C"
+    /// DAM
+    case dam            = "1D"
     /// 見えるガイドメロディ
     case guidebar       = "B5"
     /// 上
