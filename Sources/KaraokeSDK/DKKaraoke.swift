@@ -76,14 +76,23 @@ open class DKKaraoke {
     }
     
     /// FistiaAPIから点数速報データを取得
-    public func getPredictionsDKRanbato(timeLimit: Int, since: Date = Date(), includeNormal: Bool) -> AnyPublisher<Fistia.Response, AFError> {
+    public func getPredictionsDKRanbato(timeLimit: Int, since: Date = Date(), includeNormal: Bool) -> AnyPublisher<Fistia.Prediction.Response, AFError> {
         let isLiveDamStadium: Bool = {
             if let credential = credential {
                 return credential.deviceType == .xg7000
             }
             return false 
         }()
-        let request = Fistia(startTime: since, timeLimit: timeLimit, includeNormal: includeNormal, isLiveDamStadium: isLiveDamStadium)
+        let request = Fistia.Prediction(startTime: since, timeLimit: timeLimit, includeNormal: includeNormal, isLiveDamStadium: isLiveDamStadium)
+        return publish(request)
+    }
+    
+    /// FistiaAPIから点数速報データを取得
+    public func getScorePredictionCount(timeSpan: Int = 1800, timeLimit: Int = 86400, since: Date = Date()) -> AnyPublisher<Fistia.PredictionCount.Response, AFError> {
+        // 区切りが良い時間に修正するコード
+        let currentTime = (Int(Date().timeIntervalSince1970) / timeSpan) * timeSpan
+        let startTime = Date(timeIntervalSince1970: TimeInterval(currentTime))
+        let request = Fistia.PredictionCount(startTime: startTime, timeSpan: timeSpan, timeLimit: timeLimit)
         return publish(request)
     }
     
@@ -135,6 +144,50 @@ open class DKKaraoke {
                 print(request)
             }
             .publishDecodable(type: Login.Response.self, decoder: decoder)
+            .value()
+    }
+    
+    internal func publish(_ request: Search) -> AnyPublisher<Search.Response, AFError> {
+        session.request(request)
+            .validateWithFuckingDKFormat()
+            .validate(contentType: ["application/json"])
+            .cURLDescription { request in
+                print(request)
+            }
+            .publishDecodable(type: Search.Response.self, decoder: decoder)
+            .value()
+    }
+    
+    internal func publish(_ request: Detail) -> AnyPublisher<Detail.Response, AFError> {
+        session.request(request)
+            .validateWithFuckingDKFormat()
+            .validate(contentType: ["application/json"])
+            .cURLDescription { request in
+                print(request)
+            }
+            .publishDecodable(type: Detail.Response.self, decoder: JSONDecoder())
+            .value()
+    }
+    
+    internal func publish(_ request: Fistia.Prediction) -> AnyPublisher<Fistia.Prediction.Response, AFError> {
+        session.request(request)
+            .validateWithFuckingDKFormat()
+            .validate(contentType: ["application/json"])
+            .cURLDescription { request in
+                print(request)
+            }
+            .publishDecodable(type: Fistia.Prediction.Response.self, decoder: JSONDecoder())
+            .value()
+    }
+    
+    internal func publish(_ request: Fistia.PredictionCount) -> AnyPublisher<Fistia.PredictionCount.Response, AFError> {
+        session.request(request)
+            .validateWithFuckingDKFormat()
+            .validate(contentType: ["application/json"])
+            .cURLDescription { request in
+                print(request)
+            }
+            .publishDecodable(type: Fistia.PredictionCount.Response.self, decoder: JSONDecoder())
             .value()
     }
     
@@ -201,8 +254,8 @@ open class DKKaraoke {
     }
     
     /// 楽曲予約
-    public func request(reqNo: String, myKey: Int) -> AnyPublisher<Request.Response, AFError> {
-        let request = Request(reqNo: reqNo, myKey: myKey)
+    public func request(requestNo: Int, myKey: Int) -> AnyPublisher<Request.Response, AFError> {
+        let request = Request(reqNo: requestNo, myKey: myKey)
         return publish(request)
     }
     
@@ -215,6 +268,25 @@ open class DKKaraoke {
     /// 画像送信
     public func sendPicture(image: UIImage) -> AnyPublisher<Picture.Response, AFError> {
         let request = Picture(image: image)
+        return publish(request)
+    }
+    
+    /// 楽曲検索
+    public func searchByKeyword(keyword: String, mode: Search.Mode) -> AnyPublisher<Search.Response, AFError> {
+        let request = Search(keyword: keyword, mode: mode)
+        return publish(request)
+    }
+    
+    /// 楽曲詳細情報取得
+    public func getSongDetail(requestNo: String) -> AnyPublisher<Detail.Response, AFError> {
+        // シリアルを作成
+        let serialNo: String = {
+            if let credential = credential {
+                return credential.serial
+            }
+            return "AT00001"
+        }()
+        let request = Detail(requestNo: requestNo, serialNo: serialNo)
         return publish(request)
     }
 }

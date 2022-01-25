@@ -30,7 +30,6 @@ public final class Ranking: RequestType {
         public let rank: Int
         public let score: UInt32
         public let nickname: String
-        //        let location: String
         
         internal init?(document: XMLElement) {
             guard let rankText = document.xpath("td[1]").first?.text,
@@ -48,5 +47,12 @@ public final class Ranking: RequestType {
             self.nickname = String(nickname)
             self.id = UUID().uuidString
         }
+    }
+    
+    public func asURLRequest() throws -> URLRequest {
+        let url = baseURL.appendingPathComponent(path)
+        var request = try URLRequest(url: url, method: method, headers: nil)
+        request.timeoutInterval = TimeInterval(10)
+        return try encoding.encode(request, with: parameters)
     }
 }
