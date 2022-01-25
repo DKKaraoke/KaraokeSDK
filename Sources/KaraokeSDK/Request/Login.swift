@@ -47,44 +47,20 @@ public final class Login: RequestType {
 
         // MARK: - MyList
         public struct MyList: Codable {
-            public init(artistId: String, artistKana: String, artistName: String, distEnd: String, distStart: String, firstBars: String, funcAnimePicture: String, funcPersonPicture: String, funcRecording: String, funcScore: String, indicationMonth: String, myKey: String, myListNo: String, orgKey: String, programTitle: String, registerDate: String, reqNo: String, songKana: String, songName: String, titleFirstKana: String, updateLockKey: String) {
-                self.artistId = artistId
-                self.artistKana = artistKana
-                self.artistName = artistName
-                self.distEnd = distEnd
-                self.distStart = distStart
-                self.firstBars = firstBars
-                self.funcAnimePicture = funcAnimePicture
-                self.funcPersonPicture = funcPersonPicture
-                self.funcRecording = funcRecording
-                self.funcScore = funcScore
-                self.indicationMonth = indicationMonth
-                self.myKey = myKey
-                self.myListNo = myListNo
-                self.orgKey = orgKey
-                self.programTitle = programTitle
-                self.registerDate = registerDate
-                self.reqNo = reqNo
-                self.songKana = songKana
-                self.songName = songName
-                self.titleFirstKana = titleFirstKana
-                self.updateLockKey = updateLockKey
-            }
-            
             public let artistId: String
             public let artistKana: String
             public let artistName: String
             public let distEnd: String
             public let distStart: String
             public let firstBars: String
-            public let funcAnimePicture: String
-            public let funcPersonPicture: String
-            public let funcRecording: String
-            public let funcScore: String
+            public let funcAnimePicture: Bool
+            public let funcPersonPicture: Bool
+            public let funcRecording: Bool
+            public let funcScore: Bool
             public let indicationMonth: String
-            public let myKey: String
-            public let myListNo: String
-            public let orgKey: String
+            public let myKey: Int
+            public let myListNo: Int
+            public let orgKey: Int
             public let programTitle: String
             public let registerDate: String
             public let reqNo: String
@@ -92,6 +68,45 @@ public final class Login: RequestType {
             public let songName: String
             public let titleFirstKana: String
             public let updateLockKey: String
+            
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                
+                self.artistId = try container.decode(String.self, forKey: .artistId)
+                self.artistKana = try container.decode(String.self, forKey: .artistKana)
+                self.artistName = try container.decode(String.self, forKey: .artistName)
+                self.distEnd = try container.decode(String.self, forKey: .distEnd)
+                self.distStart = try container.decode(String.self, forKey: .distStart)
+                self.firstBars = try container.decode(String.self, forKey: .firstBars)
+                self.funcAnimePicture = Bool(try container.decode(String.self, forKey: .funcAnimePicture))
+                self.funcPersonPicture = Bool(try container.decode(String.self, forKey: .funcPersonPicture))
+                self.funcRecording = Bool(try container.decode(String.self, forKey: .funcRecording))
+                self.funcScore = Bool(try container.decode(String.self, forKey: .funcScore))
+                self.indicationMonth = try container.decode(String.self, forKey: .distStart)
+                self.myKey = Int(try container.decode(String.self, forKey: .myKey))!
+                self.myListNo = Int(try container.decode(String.self, forKey: .myListNo))!
+                self.orgKey = Int(try container.decode(String.self, forKey: .orgKey))!
+                self.programTitle = try container.decode(String.self, forKey: .programTitle)
+                self.registerDate = try container.decode(String.self, forKey: .registerDate)
+                self.reqNo = try container.decode(String.self, forKey: .reqNo)
+                self.songKana = try container.decode(String.self, forKey: .songKana)
+                self.songName = try container.decode(String.self, forKey: .songName)
+                self.titleFirstKana = try container.decode(String.self, forKey: .titleFirstKana)
+                self.updateLockKey = try container.decode(String.self, forKey: .updateLockKey)
+            }
         }
+    }
+}
+
+fileprivate extension Bool {
+    init(_ stringValue: String) {
+        self.init(stringValue != "0")
+    }
+    
+    init?(_ stringValue: String?) {
+        guard let stringValue = stringValue else {
+            return nil
+        }
+        self.init(stringValue != "0")
     }
 }

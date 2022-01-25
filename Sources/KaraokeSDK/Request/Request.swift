@@ -21,7 +21,7 @@ public final class Request: RequestType {
         return formatter
     }()
     
-    init(reqNo: String, myKey: Int, interrupt: Int = 0) {
+    init(reqNo: Int, myKey: Int, interrupt: Int = 0) {
         self.parameters = [
             "reqNo": reqNo,
             "sendDate": dateFormatter.string(from: Date()),
