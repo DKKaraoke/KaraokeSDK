@@ -13,6 +13,7 @@ import KeychainAccess
 import UIKit
 
 open class DKKaraoke {
+    public weak var delegate: AFSesseionProgressDelegate? = nil
     /// シングルトン
     public static let shared: DKKaraoke = DKKaraoke()
     /// 接続用の認証情報
@@ -59,7 +60,7 @@ open class DKKaraoke {
     
     internal let session: Alamofire.Session = {
         let session = Alamofire.Session()
-        session.sessionConfiguration.timeoutIntervalForRequest = 10
+        session.sessionConfiguration.timeoutIntervalForRequest = 5
         session.sessionConfiguration.httpMaximumConnectionsPerHost = 1
         return session
     }()
@@ -128,10 +129,16 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Connect.Response.self, decoder: decoder)
             .value()
-            .handleEvents(receiveOutput: { response in
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveOutput: { response in
                 /// 認証情報を作成してKeychainに保存
                 let credential: OAuthCredential = OAuthCredential(response: response)
                 self.credential = credential
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .handleEvents(receiveOutput: { response in
             })
             .eraseToAnyPublisher()
     }
@@ -145,6 +152,12 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Login.Response.self, decoder: decoder)
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     internal func publish(_ request: Search) -> AnyPublisher<Search.Response, AFError> {
@@ -156,10 +169,16 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Search.Response.self, decoder: decoder)
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     internal func publish(_ request: Detail) -> AnyPublisher<Detail.Response, AFError> {
-        session.request(request)
+        return session.request(request)
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
@@ -167,6 +186,12 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Detail.Response.self, decoder: JSONDecoder())
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     internal func publish(_ request: Fistia.Prediction) -> AnyPublisher<Fistia.Prediction.Response, AFError> {
@@ -178,6 +203,12 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Fistia.Prediction.Response.self, decoder: JSONDecoder())
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     internal func publish(_ request: Fistia.PredictionCount) -> AnyPublisher<Fistia.PredictionCount.Response, AFError> {
@@ -189,6 +220,12 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Fistia.PredictionCount.Response.self, decoder: JSONDecoder())
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     /// リクエスト送信
@@ -207,6 +244,12 @@ open class DKKaraoke {
             }
             .publishDecodable(type: T.ResponseType.self, decoder: decoder)
             .value()
+            .handleEvents(receiveSubscription: { _ in
+                self.delegate?.sessionIsRunning()
+            }, receiveCompletion: { _ in
+                self.delegate?.sessionIsTerminated()
+            })
+            .eraseToAnyPublisher()
     }
     
     /// リザルト取得

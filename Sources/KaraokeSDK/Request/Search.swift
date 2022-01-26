@@ -44,26 +44,26 @@ public final class Search: RequestType {
         public let artist: String
         public let artistYomi: String
         public let releaseDate: String
-        public let newReleaseFlag: Bool
-        public let futureReleaseFlag: Bool
-        public let newArrivalsFlag: Bool
-        public let honninFlag: Bool
-        public let animeFlag: Bool
-        public let liveFlag: Bool
-        public let kidsFlag: Bool
-        public let mamaotoFlag: Bool
-        public let namaotoFlag: Bool
-        public let duetFlag: Bool
-        public let guideVocalFlag: Bool
-        public let prookeFlag: Bool
-        public let damTomoMovieFlag: Bool
-        public let damTomoRecordingFlag: Bool
-        public let damTomoPublicVocalFlag: Bool?
-        public let damTomoPublicMovieFlag: Bool?
-        public let damTomoPublicRecordingFlag: Bool?
-        public let scoreFlag: Bool
-        public let myListFlag: Bool
-        public let shift: String?
+        @StringAcceptable public var newReleaseFlag: Bool
+        @StringAcceptable public var futureReleaseFlag: Bool
+        @StringAcceptable public var newArrivalsFlag: Bool
+        @StringAcceptable public var honninFlag: Bool
+        @StringAcceptable public var animeFlag: Bool
+        @StringAcceptable public var liveFlag: Bool
+        @StringAcceptable public var kidsFlag: Bool
+        @StringAcceptable public var mamaotoFlag: Bool
+        @StringAcceptable public var namaotoFlag: Bool
+        @StringAcceptable public var duetFlag: Bool
+        @StringAcceptable public var guideVocalFlag: Bool
+        @StringAcceptable public var prookeFlag: Bool
+        @StringAcceptable public var damTomoMovieFlag: Bool
+        @StringAcceptable public var damTomoRecordingFlag: Bool
+        @NullAcceptable public var damTomoPublicVocalFlag: Bool?
+        @NullAcceptable public var damTomoPublicMovieFlag: Bool?
+        @NullAcceptable public var damTomoPublicRecordingFlag: Bool?
+        @StringAcceptable public var scoreFlag: Bool
+        @StringAcceptable public var myListFlag: Bool
+        @NullAcceptable public var shift: Int?
         public let playbackTime: Int
         public let highlightLyrics: String?
     }
@@ -71,10 +71,10 @@ public final class Search: RequestType {
     // MARK: - DataClass
     public struct DataClass: Codable {
         public let pageCount: Int
-        public let hasPreview: String
-        public let overFlag: String
-        public let pageNo: Int
-        public let hasNext: String
+        @StringAcceptable public var hasPreview: Bool
+        @StringAcceptable public var overFlag: Bool
+        @StringAcceptable public var pageNo: Int
+        @StringAcceptable public var hasNext: Bool
         public let keyword: String
         public let totalCount: Int
     }
@@ -85,59 +85,9 @@ public final class Search: RequestType {
         public let message: String
     }
 
-
     public enum Mode: String, CaseIterable {
         case artist     = "SearchArtistByKeywordApi"
         case music      = "SearchMusicByKeywordApi"
         case various    = "SearchVariousByKeywordApi"
-    }
-}
-
-extension Search.List {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        self.requestNo = try container.decode(String.self, forKey: .requestNo)
-        self.title = try container.decode(String.self, forKey: .title)
-        self.titleYomi = try container.decode(String.self, forKey: .titleYomi)
-        self.artistCode = try container.decode(Int.self, forKey: .artistCode)
-        self.artist = try container.decode(String.self, forKey: .artist)
-        self.artistYomi = try container.decode(String.self, forKey: .artistYomi)
-        self.releaseDate = try container.decode(String.self, forKey: .releaseDate)
-        self.newReleaseFlag = Bool(try container.decode(String.self, forKey: .newReleaseFlag))
-        self.futureReleaseFlag = Bool(try container.decode(String.self, forKey: .futureReleaseFlag))
-        self.newArrivalsFlag = Bool(try container.decode(String.self, forKey: .newArrivalsFlag))
-        self.honninFlag = Bool(try container.decode(String.self, forKey: .honninFlag))
-        self.animeFlag = Bool(try container.decode(String.self, forKey: .animeFlag))
-        self.liveFlag = Bool(try container.decode(String.self, forKey: .liveFlag))
-        self.kidsFlag = Bool(try container.decode(String.self, forKey: .kidsFlag))
-        self.mamaotoFlag = Bool(try container.decode(String.self, forKey: .mamaotoFlag))
-        self.namaotoFlag = Bool(try container.decode(String.self, forKey: .namaotoFlag))
-        self.duetFlag = Bool(try container.decode(String.self, forKey: .duetFlag))
-        self.guideVocalFlag = Bool(try container.decode(String.self, forKey: .guideVocalFlag))
-        self.prookeFlag = Bool(try container.decode(String.self, forKey: .prookeFlag))
-        self.damTomoMovieFlag = Bool(try container.decode(String.self, forKey: .damTomoMovieFlag))
-        self.damTomoRecordingFlag = Bool(try container.decode(String.self, forKey: .damTomoRecordingFlag))
-        self.damTomoPublicVocalFlag = Bool(try container.decodeIfPresent(String.self, forKey: .damTomoPublicVocalFlag))
-        self.damTomoPublicMovieFlag = Bool(try container.decodeIfPresent(String.self, forKey: .damTomoPublicMovieFlag))
-        self.damTomoPublicRecordingFlag = Bool(try container.decodeIfPresent(String.self, forKey: .damTomoPublicRecordingFlag))
-        self.scoreFlag = Bool(try container.decode(String.self, forKey: .scoreFlag))
-        self.myListFlag = Bool(try container.decode(String.self, forKey: .myListFlag))
-        self.shift = try container.decodeIfPresent(String.self, forKey: .shift)
-        self.playbackTime = try container.decode(Int.self, forKey: .playbackTime)
-        self.highlightLyrics = try container.decodeIfPresent(String.self, forKey: .highlightLyrics)
-    }
-}
-
-fileprivate extension Bool {
-    init(_ stringValue: String) {
-        self.init(stringValue != "0")
-    }
-    
-    init?(_ stringValue: String?) {
-        guard let stringValue = stringValue else {
-            return nil
-        }
-        self.init(stringValue != "0")
     }
 }

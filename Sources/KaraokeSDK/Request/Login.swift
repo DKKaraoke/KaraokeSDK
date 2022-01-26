@@ -47,66 +47,55 @@ public final class Login: RequestType {
 
         // MARK: - MyList
         public struct MyList: Codable {
-            public let artistId: String
+            @StringAcceptable public var artistId: Int
             public let artistKana: String
             public let artistName: String
-            public let distEnd: String
-            public let distStart: String
+            @StringAcceptable public var distEnd: Int
+            @StringAcceptable public var distStart: Int
             public let firstBars: String
-            public let funcAnimePicture: Bool
-            public let funcPersonPicture: Bool
-            public let funcRecording: Bool
-            public let funcScore: Bool
+            @StringAcceptable public var funcAnimePicture: Bool
+            @StringAcceptable public var funcPersonPicture: Bool
+            @StringAcceptable public var funcRecording: Bool
+            @StringAcceptable public var funcScore: Bool
             public let indicationMonth: String
-            public let myKey: Int
-            public let myListNo: Int
-            public let orgKey: Int
+            @StringAcceptable public var myKey: Int
+            @StringAcceptable public var myListNo: Int
+            @StringAcceptable public var orgKey: Int
             public let programTitle: String
             public let registerDate: String
             public let reqNo: String
             public let songKana: String
             public let songName: String
             public let titleFirstKana: String
-            public let updateLockKey: String
-            
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                
-                self.artistId = try container.decode(String.self, forKey: .artistId)
-                self.artistKana = try container.decode(String.self, forKey: .artistKana)
-                self.artistName = try container.decode(String.self, forKey: .artistName)
-                self.distEnd = try container.decode(String.self, forKey: .distEnd)
-                self.distStart = try container.decode(String.self, forKey: .distStart)
-                self.firstBars = try container.decode(String.self, forKey: .firstBars)
-                self.funcAnimePicture = Bool(try container.decode(String.self, forKey: .funcAnimePicture))
-                self.funcPersonPicture = Bool(try container.decode(String.self, forKey: .funcPersonPicture))
-                self.funcRecording = Bool(try container.decode(String.self, forKey: .funcRecording))
-                self.funcScore = Bool(try container.decode(String.self, forKey: .funcScore))
-                self.indicationMonth = try container.decode(String.self, forKey: .distStart)
-                self.myKey = Int(try container.decode(String.self, forKey: .myKey))!
-                self.myListNo = Int(try container.decode(String.self, forKey: .myListNo))!
-                self.orgKey = Int(try container.decode(String.self, forKey: .orgKey))!
-                self.programTitle = try container.decode(String.self, forKey: .programTitle)
-                self.registerDate = try container.decode(String.self, forKey: .registerDate)
-                self.reqNo = try container.decode(String.self, forKey: .reqNo)
-                self.songKana = try container.decode(String.self, forKey: .songKana)
-                self.songName = try container.decode(String.self, forKey: .songName)
-                self.titleFirstKana = try container.decode(String.self, forKey: .titleFirstKana)
-                self.updateLockKey = try container.decode(String.self, forKey: .updateLockKey)
-            }
+            @StringAcceptable public var updateLockKey: Int
         }
     }
 }
 
-fileprivate extension Bool {
-    init(_ stringValue: String) {
-        self.init(stringValue != "0")
+extension KeyedDecodingContainer {
+    func decodeIfAccaptable<T: Decodable>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T where T: LosslessStringConvertible {
+        // その型に変換できたらそのまま返す
+        if let rawValue = try? decode(T.self, forKey: key) {
+            return rawValue
+        }
+        // 文字列に変換できたらTに変換する
+        if let stringValue = try? decode(String.self, forKey: key),
+           let rawValue = T(stringValue) {
+            return rawValue
+        }
+        throw DecodingError.typeMismatch(T.self, .init(codingPath: self.codingPath, debugDescription: "Expected to decode `\(T.self)/String` but found a `Unknown` instead.", underlyingError: nil))
     }
     
-    init?(_ stringValue: String?) {
-        guard let stringValue = stringValue else {
-            return nil
+    func decodeIfPresentAccaptable<T: Decodable>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T: LosslessStringConvertible {
+        // その型に変換できたらそのまま返す
+        if let rawValue = try? decode(T.self, forKey: key) {
+            return rawValue
         }
-        self.init(stringValue != "0")
+        // 文字列に変換できたらTに変換する
+        if let stringValue = try? decode(String.self, forKey: key),
+           let rawValue = T(stringValue) {
+            return rawValue
+        }
+        return nil
     }
 }
