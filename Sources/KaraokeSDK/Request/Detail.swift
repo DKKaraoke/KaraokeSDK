@@ -41,11 +41,11 @@ public final class Detail: RequestType {
     // MARK: - KModelMusicInfoList
     public struct KModelMusicInfoList: Codable {
         public let highlightTieUp: String?
-        public let kidsFlag: String
-        public let damTomoPublicVocalFlag: String
-        public let damTomoPublicMovieFlag: String
-        public let damTomoPublicRecordingFlag: String
-        public let karaokeDamFlag: String
+        @StringAcceptable public var kidsFlag: Bool
+        @NullAcceptable public var damTomoPublicVocalFlag: Bool?
+        @NullAcceptable public var damTomoPublicMovieFlag: Bool?
+        @NullAcceptable public var damTomoPublicRecordingFlag: Bool?
+        @NullAcceptable public var karaokeDamFlag: Bool?
         public let playbackTime: Int
         public let eachModelMusicInfoList: [EachModelMusicInfoList]
     }
@@ -58,47 +58,21 @@ public final class Detail: RequestType {
         public let shift: String
         public let mainMovieId: String
         public let mainMovieName: String
-        public let subMovieId: String
-        public let subMovieName: String
-        public let honninFlag: Bool
-        public let animeFlag: Bool
-        public let liveFlag: Bool
-        public let mamaotoFlag: Bool
-        public let namaotoFlag: Bool
-        public let duetFlag: Bool
-        public let guideVocalFlag: Bool
-        public let prookeFlag: Bool
-        public let scoreFlag: Bool
-        public let duetDxFlag: Bool
-        public let damTomoMovieFlag: Bool
-        public let damTomoRecordingFlag: Bool
-        public let myListFlag: Bool
-        
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.karaokeModelNum = try container.decode(String.self, forKey: .karaokeModelNum)
-            self.karaokeModelName = try container.decode(String.self, forKey: .karaokeModelName)
-            self.releaseDate = try container.decode(String.self, forKey: .releaseDate)
-            self.shift = try container.decode(String.self, forKey: .shift)
-            self.mainMovieId = try container.decode(String.self, forKey: .mainMovieId)
-            self.mainMovieName = try container.decode(String.self, forKey: .mainMovieName)
-            self.subMovieId = try container.decode(String.self, forKey: .subMovieId)
-            self.subMovieName = try container.decode(String.self, forKey: .subMovieName)
-            self.honninFlag = Bool(try container.decode(String.self, forKey: .honninFlag))
-            self.animeFlag = Bool(try container.decode(String.self, forKey: .animeFlag))
-            self.liveFlag = Bool(try container.decode(String.self, forKey: .liveFlag))
-            self.mamaotoFlag = Bool(try container.decode(String.self, forKey: .mamaotoFlag))
-            self.namaotoFlag = Bool(try container.decode(String.self, forKey: .namaotoFlag))
-            self.duetFlag = Bool(try container.decode(String.self, forKey: .duetFlag))
-            self.guideVocalFlag = Bool(try container.decode(String.self, forKey: .guideVocalFlag))
-            self.prookeFlag = Bool(try container.decode(String.self, forKey: .prookeFlag))
-            self.damTomoMovieFlag = Bool(try container.decode(String.self, forKey: .damTomoMovieFlag))
-            self.damTomoRecordingFlag = Bool(try container.decode(String.self, forKey: .damTomoRecordingFlag))
-            self.scoreFlag = Bool(try container.decode(String.self, forKey: .scoreFlag))
-            self.myListFlag = Bool(try container.decode(String.self, forKey: .myListFlag))
-            self.duetDxFlag = Bool(try container.decode(String.self, forKey: .duetDxFlag))
-        }
+        @StringAcceptable public var subMovieId: String
+        @StringAcceptable public var subMovieName: String
+        @StringAcceptable public var honninFlag: Bool
+        @StringAcceptable public var animeFlag: Bool
+        @StringAcceptable public var liveFlag: Bool
+        @StringAcceptable public var mamaotoFlag: Bool
+        @StringAcceptable public var namaotoFlag: Bool
+        @StringAcceptable public var duetFlag: Bool
+        @StringAcceptable public var guideVocalFlag: Bool
+        @StringAcceptable public var prookeFlag: Bool
+        @StringAcceptable public var scoreFlag: Bool
+        @StringAcceptable public var duetDxFlag: Bool
+        @StringAcceptable public var damTomoMovieFlag: Bool
+        @StringAcceptable public var damTomoRecordingFlag: Bool
+        @StringAcceptable public var myListFlag: Bool
     }
     
     // MARK: - DataClass
@@ -138,15 +112,3 @@ public final class Detail: RequestType {
     }
 }
 
-fileprivate extension Bool {
-    init(_ stringValue: String) {
-        self.init(stringValue != "0")
-    }
-    
-    init?(_ stringValue: String?) {
-        guard let stringValue = stringValue else {
-            return nil
-        }
-        self.init(stringValue != "0")
-    }
-}
