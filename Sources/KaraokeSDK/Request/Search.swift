@@ -64,7 +64,7 @@ public final class Search: RequestType {
         @StringAcceptable public var scoreFlag: Bool
         @StringAcceptable public var myListFlag: Bool
         @NullAcceptable public var shift: Int?
-        public let playbackTime: Int
+        public let playbackTime: Int?
         public let highlightLyrics: String?
     }
     

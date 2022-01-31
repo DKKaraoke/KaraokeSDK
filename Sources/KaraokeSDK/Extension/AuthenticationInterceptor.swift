@@ -81,6 +81,7 @@ extension DKKaraoke: Authenticator {
     public func refresh(_ credential: OAuthCredential, for session: Session, completion: @escaping (Swift.Result<OAuthCredential, Error>) -> Void) {
         let qrCode: String = try! QRCode(code: credential.code).code
         self.connect(qrCode: qrCode, cdmNo: credential.cdmNo)
+            .receive(on: DispatchQueue.main, options: nil)
             .sink(receiveCompletion: { result in
                 switch result {
                     case .finished:

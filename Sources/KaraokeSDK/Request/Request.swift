@@ -21,13 +21,15 @@ public final class Request: RequestType {
         return formatter
     }()
     
-    init(reqNo: Int, myKey: Int, interrupt: Int = 0) {
-        self.parameters = [
+    init(reqNo: Int, myKey: Int, interrupt: Int = 0, contentsKind: DKContent) {
+        let parameters: [String: Any?] = [
             "reqNo": reqNo,
             "sendDate": dateFormatter.string(from: Date()),
             "myKey": String(myKey),
-            "interrupt": String(interrupt)
+            "interrupt": String(interrupt),
+            "contentsKind": contentsKind.kindValue
         ]
+        self.parameters = parameters.compactMapValues({ $0 })
     }
     
     public struct Response: Codable {

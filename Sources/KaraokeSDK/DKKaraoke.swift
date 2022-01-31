@@ -38,8 +38,6 @@ open class DKKaraoke {
     }
     /// タスク管理
     var task = Set<AnyCancellable>()
-    /// キュー
-    let queue: DispatchSemaphore = DispatchSemaphore(value: 1)
     /// JSONDecoder
     let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -65,15 +63,29 @@ open class DKKaraoke {
         return session
     }()
     
-    /// スクレイピング用のコード
-    internal func parseToHTML(data: Data) -> [Ranking.Response] {
-        guard let html = String(data: data, encoding: .shiftJIS),
-              let document = try? HTML(html: html, encoding: .shiftJIS)
-        else {
-            return []
+    public var contentsKinds: [DKContent] {
+        switch credential?.deviceType {
+            case .xg8000:
+                return [.設定しない, .精密採点DXG, .精密採点AI, .ランキングバトル]
+            case .xg7000:
+                return [.設定しない, .精密採点DXG, .ランキングバトル]
+            case .xg5000:
+                return [.設定しない, .精密採点DX, .ランキングバトル]
+            case .unknown:
+                return []
+            case .none:
+                return []
         }
-        let users = document.xpath("//*[@id=\"Rankingbattle\"]/table[2]/tr[not(@style=\"background:#DFF1FD\")]")
-        return users.compactMap({ Ranking.Response(document: $0) })
+    }
+    
+    /// スクレイピング用のコード
+    internal func parseToHTML(data: Data, encoding: String.Encoding) -> HTMLDocument? {
+        guard let html = String(data: data, encoding: encoding),
+              let document = try? HTML(html: html, encoding: encoding)
+        else {
+            return nil
+        }
+        return document
     }
     
     /// FistiaAPIから点数速報データを取得
@@ -82,7 +94,7 @@ open class DKKaraoke {
             if let credential = credential {
                 return credential.deviceType == .xg7000
             }
-            return false 
+            return false
         }()
         let request = Fistia.Prediction(startTime: since, timeLimit: timeLimit, includeNormal: includeNormal, isLiveDamStadium: isLiveDamStadium)
         return publish(request)
@@ -112,7 +124,13 @@ open class DKKaraoke {
                 .sink(receiveCompletion: { completion in
                     print(completion)
                 }, receiveValue: { response in
-                    promise(.success(self.parseToHTML(data: response)))
+                    guard let html = self.parseToHTML(data: response, encoding: .shiftJIS) else {
+                        promise(.failure(AFError.responseSerializationFailed(reason: .decodingFailed(error: DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "", underlyingError: nil))))))
+                        return
+                    }
+                    let users = html.xpath("//*[@id=\"Rankingbattle\"]/table[2]/tr[not(@style=\"background:#DFF1FD\")]")
+                    let ranking = users.compactMap({ Ranking.Response(document: $0) })
+                    promise(.success(ranking))
                 })
                 .store(in: &self.task)
         }
@@ -125,10 +143,13 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: Connect.Response.self, decoder: decoder)
             .value()
+            .receive(on: DispatchQueue.main, options: nil)
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
             }, receiveOutput: { response in
@@ -148,7 +169,9 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: Login.Response.self, decoder: decoder)
             .value()
@@ -165,7 +188,9 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: Search.Response.self, decoder: decoder)
             .value()
@@ -182,9 +207,11 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
-            .publishDecodable(type: Detail.Response.self, decoder: JSONDecoder())
+            .publishDecodable(type: Detail.Response.self, decoder: decoder)
             .value()
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
@@ -199,7 +226,9 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: Fistia.Prediction.Response.self, decoder: JSONDecoder())
             .value()
@@ -216,7 +245,9 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: Fistia.PredictionCount.Response.self, decoder: JSONDecoder())
             .value()
@@ -240,7 +271,9 @@ open class DKKaraoke {
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
             .cURLDescription { request in
+#if DEBUG
                 print(request)
+#endif
             }
             .publishDecodable(type: T.ResponseType.self, decoder: decoder)
             .value()
@@ -297,8 +330,8 @@ open class DKKaraoke {
     }
     
     /// 楽曲予約
-    public func request(requestNo: Int, myKey: Int) -> AnyPublisher<Request.Response, AFError> {
-        let request = Request(reqNo: requestNo, myKey: myKey)
+    public func request(requestNo: Int, myKey: Int, contentsKind: DKContent = .設定しない) -> AnyPublisher<Request.Response, AFError> {
+        let request = Request(reqNo: requestNo, myKey: myKey, contentsKind: contentsKind)
         return publish(request)
     }
     
@@ -331,5 +364,47 @@ open class DKKaraoke {
         }()
         let request = Detail(requestNo: requestNo, serialNo: serialNo)
         return publish(request)
+    }
+    
+    /// アルバム画像取得
+    public func search(songName: String, artistName: String) -> AnyPublisher<URL, AFError> {
+        let searchText: String = {
+            if artistName.count <= 10 {
+                return "\(songName.normalizedText)+\(artistName)"
+            }
+            return songName.normalizedText
+        }()
+        let request = Amazon.Image(searchText: searchText)
+        return Future { promise in
+            self.session.request(request)
+                .validate()
+                .validate(contentType: ["text/html"])
+                .cURLDescription { request in
+#if DEBUG
+                    print(request)
+#endif
+                }
+                .publishData()
+                .value()
+                .sink(receiveCompletion: { completion in
+                }, receiveValue: { response in
+                    guard let html: String = String(data: response, encoding: .utf8),
+                          let mediaURL: String = try? html.matching(pattern: "https://m.media-amazon.com/images/I/([\\S]*654_QL65_).jpg").first,
+                          let imageURL: URL = URL(string: mediaURL)
+                    else {
+                        promise(.failure(AFError.responseValidationFailed(reason: .customValidationFailed(error: DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Invalid resopnse", underlyingError: nil))))))
+                        return
+                    }
+                    promise(.success(imageURL))
+                })
+                .store(in: &self.task)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension String {
+    var normalizedText: String {
+        self.replacingOccurrences(of: "\\([^\\)]+\\)|\\[[^\\]]+\\]", with: "", options: .regularExpression)
     }
 }
