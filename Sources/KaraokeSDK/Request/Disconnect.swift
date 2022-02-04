@@ -10,11 +10,11 @@ import Alamofire
 import UIKit
 
 public final class Disconnect: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamSeparateServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamSeparateServlet"
+    public var parameters: Parameters
 
     init() {
         self.parameters = [

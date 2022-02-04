@@ -9,11 +9,11 @@ import Foundation
 import Alamofire
 
 public final class Request: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamSendServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamSendServlet"
+    public var parameters: Parameters
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone.current

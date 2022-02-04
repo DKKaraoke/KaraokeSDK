@@ -10,19 +10,19 @@ import Alamofire
 
 public enum Fistia {
     public final class Prediction: RequestType {
-        typealias ResponseType = Response
+        public typealias ResponseType = Response
         
-        var method: HTTPMethod = .get
-        var path: String = "_score_predictions"
-        var baseURL: URL = {
+        public var method: HTTPMethod = .get
+        public var path: String = "_score_predictions"
+        public var baseURL: URL = {
             #if DEBUG
             return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
             #else
             return URL(string: "https://entei-kun.proj.tokyo/api/")!
             #endif
         }()
-        var parameters: Parameters
-        var encoding: ParameterEncoding = URLEncoding.queryString
+        public var parameters: Parameters
+        public var encoding: ParameterEncoding = URLEncoding.queryString
         let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.timeZone = TimeZone.current
@@ -77,15 +77,15 @@ public enum Fistia {
     }
     
     public final class PredictionCount: RequestType {
-        typealias ResponseType = Response
+        public typealias ResponseType = Response
         
-        var method: HTTPMethod = .get
-        var path: String = "_score_prediction_count"
-        var baseURL: URL = {
+        public var method: HTTPMethod = .get
+        public var path: String = "_score_prediction_count"
+        public var baseURL: URL = {
             return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
         }()
-        var parameters: Parameters
-        var encoding: ParameterEncoding = URLEncoding.queryString
+        public var parameters: Parameters
+        public var encoding: ParameterEncoding = URLEncoding.queryString
         let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.timeZone = TimeZone.current

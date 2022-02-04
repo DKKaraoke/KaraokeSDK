@@ -9,11 +9,11 @@ import Foundation
 import Alamofire
 
 public final class Ranbato: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .get
-    var path: String = "DkDamContentsHistoryServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .get
+    public var path: String = "DkDamContentsHistoryServlet"
+    public var parameters: Parameters
     
     init(cdmNo: String) {
         self.parameters = [

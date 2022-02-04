@@ -9,12 +9,12 @@ import Foundation
 import Alamofire
 
 public final class Detail: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var baseURL: URL = URL(string: "https://csgw.clubdam.com/dkwebsys/search-api/")!
-    var parameters: Parameters
-    var path: String = "GetMusicDetailInfoApi"
+    public var method: HTTPMethod = .post
+    public var baseURL: URL = URL(string: "https://csgw.clubdam.com/dkwebsys/search-api/")!
+    public var parameters: Parameters
+    public var path: String = "GetMusicDetailInfoApi"
     
     init(requestNo: String, serialNo: String) {
         self.parameters = [

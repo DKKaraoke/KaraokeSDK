@@ -11,13 +11,13 @@ import Kanna
 
 public final class Ranking: RequestType {
     
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .get
-    var baseURL: URL = URL(string: "https://www.clubdam.com/")!
-    var path: String = "app/damStation/clubdamRanking.do"
-    var parameters: Parameters
-    var encoding: ParameterEncoding = URLEncoding.queryString
+    public var method: HTTPMethod = .get
+    public var baseURL: URL = URL(string: "https://www.clubdam.com/")!
+    public var path: String = "app/damStation/clubdamRanking.do"
+    public var parameters: Parameters
+    public var encoding: ParameterEncoding = URLEncoding.queryString
     
     init(requestNo: Int) {
         self.parameters = [

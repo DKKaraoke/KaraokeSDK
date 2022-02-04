@@ -10,11 +10,11 @@ import Alamofire
 import UIKit
 
 public final class Picture: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamPictureSendServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamPictureSendServlet"
+    public var parameters: Parameters
 
     init(image: UIImage?) {
         self.parameters = [

@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 import UIKit
 
-protocol RequestType: URLRequestConvertible {
+public protocol RequestType: URLRequestConvertible {
     associatedtype ResponseType: Decodable
     
     var method: HTTPMethod { get }
@@ -20,11 +20,11 @@ protocol RequestType: URLRequestConvertible {
 }
 
 extension RequestType {
-    var baseURL: URL {
+    public var baseURL: URL {
         URL(string: "https://denmoku.clubdam.com/dkdenmoku/")!
     }
     
-    var encoding: ParameterEncoding {
+    public var encoding: ParameterEncoding {
         JSONEncoding.default
     }
     

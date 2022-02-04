@@ -11,13 +11,13 @@ import Kanna
 
 public enum Amazon {
     final public class Image: RequestType {
-        typealias ResponseType = Response
+        public typealias ResponseType = Response
         
-        var method: HTTPMethod = .get
-        var baseURL: URL = URL(string: "https://www.amazon.co.jp/")!
-        var path: String = "s"
-        var parameters: Parameters
-        var encoding: ParameterEncoding = URLEncoding.queryString
+        public var method: HTTPMethod = .get
+        public var baseURL: URL = URL(string: "https://www.amazon.co.jp/")!
+        public var path: String = "s"
+        public var parameters: Parameters
+        public var encoding: ParameterEncoding = URLEncoding.queryString
         
         init(searchText: String) {
             self.parameters = [

@@ -10,11 +10,11 @@ import Alamofire
 import UIKit
 
 public final class Connect: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamConnectServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamConnectServlet"
+    public var parameters: Parameters
 
     init(qrCode: String, cdmNo: String? = nil) {
         /// ペアリングするときはQRCodeの値がわかっていないので強制的に代入

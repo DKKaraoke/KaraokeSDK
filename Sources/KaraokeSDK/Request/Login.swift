@@ -10,11 +10,11 @@ import Alamofire
 import UIKit
 
 public final class Login: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamDAMTomoLoginServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamDAMTomoLoginServlet"
+    public var parameters: Parameters
 
     init(damtomoId: String, password: String) {
         self.parameters = [

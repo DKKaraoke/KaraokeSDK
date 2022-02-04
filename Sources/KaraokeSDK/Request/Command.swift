@@ -9,11 +9,11 @@ import Foundation
 import Alamofire
 
 public final class Command: RequestType {
-    typealias ResponseType = Response
+    public typealias ResponseType = Response
     
-    var method: HTTPMethod = .post
-    var path: String = "DkDamRemoconSendServlet"
-    var parameters: Parameters
+    public var method: HTTPMethod = .post
+    public var path: String = "DkDamRemoconSendServlet"
+    public var parameters: Parameters
 
     init(command: DKCommand) {
         self.parameters = [
