@@ -17,7 +17,7 @@ open class DKKaraoke {
     /// シングルトン
     public static let shared: DKKaraoke = DKKaraoke()
     /// 接続用の認証情報
-    public internal(set) var credential: Credential? {
+    public internal(set) var credential: OAuthCredential? {
         get {
             guard let data = try? keychain.getData("CREDENTIAL"),
                   let credential = try? decoder.decode(OAuthCredential.self, from: data)
@@ -164,109 +164,20 @@ open class DKKaraoke {
             .eraseToAnyPublisher()
     }
     
-    internal func publish(_ request: Login) -> AnyPublisher<Login.Response, AFError> {
-        session.request(request)
-            .validateWithFuckingDKFormat()
-            .validate(contentType: ["application/json"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
+    public func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, AFError> {
+        let interceptor: AuthenticationInterceptor<DKKaraoke>? = {
+            switch request {
+                case is Login, is Search, is Detail:
+                    return nil
+                default:
+                    break
             }
-            .publishDecodable(type: Login.Response.self, decoder: decoder)
-            .value()
-            .handleEvents(receiveSubscription: { _ in
-                self.delegate?.sessionIsRunning()
-            }, receiveCompletion: { _ in
-                self.delegate?.sessionIsTerminated()
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    internal func publish(_ request: Search) -> AnyPublisher<Search.Response, AFError> {
-        session.request(request)
-            .validateWithFuckingDKFormat()
-            .validate(contentType: ["application/json"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
+            guard let credential = credential else {
+                return nil
             }
-            .publishDecodable(type: Search.Response.self, decoder: decoder)
-            .value()
-            .handleEvents(receiveSubscription: { _ in
-                self.delegate?.sessionIsRunning()
-            }, receiveCompletion: { _ in
-                self.delegate?.sessionIsTerminated()
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    internal func publish(_ request: Detail) -> AnyPublisher<Detail.Response, AFError> {
-        return session.request(request)
-            .validateWithFuckingDKFormat()
-            .validate(contentType: ["application/json"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
-            }
-            .publishDecodable(type: Detail.Response.self, decoder: decoder)
-            .value()
-            .handleEvents(receiveSubscription: { _ in
-                self.delegate?.sessionIsRunning()
-            }, receiveCompletion: { _ in
-                self.delegate?.sessionIsTerminated()
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    internal func publish(_ request: Fistia.Prediction) -> AnyPublisher<Fistia.Prediction.Response, AFError> {
-        session.request(request)
-            .validateWithFuckingDKFormat()
-            .validate(contentType: ["application/json"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
-            }
-            .publishDecodable(type: Fistia.Prediction.Response.self, decoder: JSONDecoder())
-            .value()
-            .handleEvents(receiveSubscription: { _ in
-                self.delegate?.sessionIsRunning()
-            }, receiveCompletion: { _ in
-                self.delegate?.sessionIsTerminated()
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    internal func publish(_ request: Fistia.PredictionCount) -> AnyPublisher<Fistia.PredictionCount.Response, AFError> {
-        session.request(request)
-            .validateWithFuckingDKFormat()
-            .validate(contentType: ["application/json"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
-            }
-            .publishDecodable(type: Fistia.PredictionCount.Response.self, decoder: JSONDecoder())
-            .value()
-            .handleEvents(receiveSubscription: { _ in
-                self.delegate?.sessionIsRunning()
-            }, receiveCompletion: { _ in
-                self.delegate?.sessionIsTerminated()
-            })
-            .eraseToAnyPublisher()
-    }
-    
-    /// リクエスト送信
-    internal func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, AFError> {
-        guard let credential = credential else {
-            return Fail(outputType: T.ResponseType.self, failure: AFError.requestAdaptationFailed(error: DKError.authenticationError))
-                .eraseToAnyPublisher()
-        }
+            return AuthenticationInterceptor(authenticator: self, credential: credential)
+        }()
         
-        let interceptor = AuthenticationInterceptor(authenticator: self, credential: credential)
         return session.request(request, interceptor: interceptor)
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
