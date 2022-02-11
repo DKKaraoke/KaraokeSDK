@@ -12,6 +12,7 @@ public enum DKError: Error {
     case loginFailedError(ValidationModel.Login)
     case logoutFailedError(ValidationModel.Logout)
     case remoconSendFailedError(ValidationModel.Remocon)
+    case pictureSendFailedError(ValidationModel.Picture)
     case authenticationError
     case invalidQRCodeError
 }
@@ -24,6 +25,8 @@ extension DKError: LocalizedError {
             case .logoutFailedError(let value):
                 return value.result.rawValue
             case .remoconSendFailedError(let value):
+                return value.result.rawValue
+            case .pictureSendFailedError(let value):
                 return value.result.rawValue
             case .authenticationError:
                 return "No credential."

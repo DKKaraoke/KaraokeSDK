@@ -16,10 +16,10 @@ public final class Picture: RequestType {
     public var path: String = "DkDamPictureSendServlet"
     public var parameters: Parameters
 
-    init(image: UIImage?) {
+    init(image: UIImage?, quality: CGFloat, size: CGSize, backgroundColor: UIColor) {
         self.parameters = [
             "sendType": "1",
-            "pictureData": image.asPictureData()
+            "pictureData": image.asPictureData(size: size, quality: quality, backgroundColor: backgroundColor)
         ]
     }
     
@@ -41,7 +41,7 @@ public final class Picture: RequestType {
         public let osVer: String
         public let pictureData: String
         public let remoconFlg: String
-        public let result: String
+        public let result: Result.Picture
         public let sendType: String
         public let songCertification: String
         public let substituteBoot: String
@@ -68,16 +68,16 @@ public final class Picture: RequestType {
 }
 
 fileprivate extension Optional where Wrapped == UIImage {
-    func asPictureData() -> String {
+    func asPictureData(size: CGSize, quality: CGFloat, backgroundColor: UIColor) -> String {
         let uiImageView = UIImageView()
-        uiImageView.frame.size = CGSize(width: 1920, height: 1080)
+        uiImageView.frame.size = size
         uiImageView.contentMode = .scaleAspectFit
-        uiImageView.backgroundColor = .black
+        uiImageView.backgroundColor = backgroundColor
         if let image = self {
             uiImageView.image = image
         }
         let image = uiImageView.asUIImage()
-        guard let pictureData = image.jpegData(compressionQuality: 1.0)?.base64EncodedString(options: .lineLength64Characters) else {
+        guard let pictureData = image.jpegData(compressionQuality: quality)?.base64EncodedString(options: .lineLength64Characters) else {
             return ""
         }
         return pictureData

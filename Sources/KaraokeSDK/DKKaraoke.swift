@@ -253,8 +253,8 @@ open class DKKaraoke {
     }
     
     /// 画像送信
-    public func sendPicture(image: UIImage) -> AnyPublisher<Picture.Response, AFError> {
-        let request = Picture(image: image)
+    public func sendPicture(image: UIImage?, quality: CGFloat = 1.0, size: CGSize = CGSize(width: 1920, height: 1080), backgroundColor: UIColor = .black) -> AnyPublisher<Picture.Response, AFError> {
+        let request = Picture(image: image, quality: quality, size: size, backgroundColor: backgroundColor)
         return publish(request)
     }
     

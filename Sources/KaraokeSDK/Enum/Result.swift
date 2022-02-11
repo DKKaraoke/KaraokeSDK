@@ -47,5 +47,7 @@ public enum Result {
         case success    = "PICTURESEND_OK"
         /// 画像送信失敗
         case failure    = "PICTURESEND_ERROR"
+        /// ログイン失敗
+        case unknown    = "DAM_CONNECT_ERROR_R"
     }
 }

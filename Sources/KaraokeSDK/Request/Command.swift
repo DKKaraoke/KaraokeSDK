@@ -31,7 +31,7 @@ public final class Command: RequestType {
         public let osVer: String
         public let remoconCode: String
         public let remoconFlg: String
-        public let result: String
+        public let result: Result.Remocon
         public let songCertification: String
         public let substituteBoot: String
     }

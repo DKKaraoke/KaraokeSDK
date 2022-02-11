@@ -20,4 +20,8 @@ public final class ValidationModel {
     public struct Remocon: Codable {
         let result: Result.Remocon
     }
+    
+    public struct Picture: Codable {
+        let result: Result.Picture
+    }
 }

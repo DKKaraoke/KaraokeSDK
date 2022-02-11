@@ -30,6 +30,11 @@ public extension DataRequest {
                     {
                         throw AFError.responseValidationFailed(reason: .customValidationFailed(error: DKError.remoconSendFailedError(failure)))
                     }
+                    if let failure = try? decoder.decode(ValidationModel.Picture.self, from: data),
+                       (failure.result == .failure || failure.result == .unknown)
+                    {
+                        throw AFError.responseValidationFailed(reason: .customValidationFailed(error: DKError.pictureSendFailedError(failure)))
+                    }
                 }
             })
         })

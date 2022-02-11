@@ -28,7 +28,7 @@ public final class Login: RequestType {
         let damtomoId: String
         let deviceId: String
         let osVer: String
-        let result: String
+        let result: Result.Login
         let serialNo: String
         public let myContents: MyContents
         
