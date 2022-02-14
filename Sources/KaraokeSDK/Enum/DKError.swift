@@ -38,6 +38,8 @@ extension DKError: LocalizedError {
                 return "画像転送失敗"
             case .unknown:
                 return "不明なエラー"
+            case .failureParam:
+                return "ログイン失敗"
             default:
                 return nil
             }
@@ -74,6 +76,8 @@ extension DKError: LocalizedError {
                 return "画像転送に失敗しました."
             case .unknown:
                 return "エラーが発生しました."
+            case .failureParam:
+                return "ユーザ名またはパスワードが短すぎます. ユーザ名とパスワードは半角英数字8文字以上です."
             default:
                 return nil
             }

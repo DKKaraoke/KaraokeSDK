@@ -8,6 +8,8 @@
 import Foundation
 
 public enum DKResult: String, Codable, CaseIterable {
+    /// 不正なパラメータ
+    case failureParam       = "PARAM_INJUSTICE_ERROR"
     /// ログイン成功
     case successLogin       = "LOGIN_OK"
     /// ログイン失敗
