@@ -13,7 +13,7 @@ import KeychainAccess
 import UIKit
 
 open class DKKaraoke {
-    public weak var delegate: AFSesseionProgressDelegate? = nil
+    public weak var delegate: DKKaraokeSessionDelegate? = nil
     /// シングルトン
     public static let shared: DKKaraoke = DKKaraoke()
     /// 接続用の認証情報
@@ -130,7 +130,7 @@ open class DKKaraoke {
                 let ranking = users.compactMap({ Ranking.Response(document: $0) })
                 return ranking
             })
-            .mapToDKError()
+            .mapToDKError(delegate: delegate)
             .eraseToAnyPublisher()
     }
     
@@ -146,7 +146,7 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Connect.Response.self, decoder: decoder)
             .value()
-            .mapToDKError()
+            .mapToDKError(delegate: delegate)
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
             }, receiveOutput: { response in
@@ -183,7 +183,7 @@ open class DKKaraoke {
             }
             .publishDecodable(type: T.ResponseType.self, decoder: decoder)
             .value()
-            .mapToDKError()
+            .mapToDKError(delegate: delegate)
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
             }, receiveCompletion: { _ in
@@ -297,11 +297,11 @@ open class DKKaraoke {
                       let mediaURL: String = try? html.matching(pattern: "https://m.media-amazon.com/images/I/([\\S]*654_QL65_).jpg").first,
                       let imageURL: URL = URL(string: mediaURL)
                 else {
-                    throw DKError.couldNotFouneResoureFailed
+                    throw DKError.couldNotFoundResoureFailed
                 }
                 return imageURL
             })
-            .mapToDKError()
+            .mapToDKError(delegate: delegate)
             .eraseToAnyPublisher()
     }
 }
@@ -313,12 +313,34 @@ extension String {
 }
 
 extension Publisher {
-    func mapToDKError() -> Publishers.MapError<Self, DKError> {
+    func mapToDKError(delegate: DKKaraokeSessionDelegate?) -> Publishers.MapError<Self, DKError> {
         mapError({ error -> DKError in
-            guard let error = error as? DKError else {
+            if let error = error as? DKError {
+                delegate?.failedWithDKError(error: error)
+                return error
+            }
+            guard let error = error.asAFError?.asDKError else {
+                delegate?.failedWithDKError(error: DKError.unknownErrorFailed)
                 return DKError.unknownErrorFailed
             }
+            delegate?.failedWithDKError(error: error)
             return error
         })
+    }
+}
+
+internal extension AFError {
+    var asDKError: DKError? {
+        switch self {
+        case .responseValidationFailed(let reason):
+            switch reason {
+            case .customValidationFailed(let error):
+                return error as? DKError
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
     }
 }

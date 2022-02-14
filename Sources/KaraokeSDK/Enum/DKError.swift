@@ -9,16 +9,16 @@ import Foundation
 import Alamofire
 
 public enum DKError: Error {
-    case responseValidationFailed(DKResult?)
+    case responseValidationFailed(DKResult)
     case responseDataCorrupted
     case authenticationFailed
     case qrCodeGenerationFailed
     case unknownErrorFailed
-    case couldNotFouneResoureFailed
+    case couldNotFoundResoureFailed
 }
 
 extension DKError: LocalizedError {
-    public var failureReason: String? {
+    public var errorDescription: String? {
         switch self {
         case .responseValidationFailed(let failure):
             switch failure {
@@ -49,12 +49,12 @@ extension DKError: LocalizedError {
             return "QRコード生成失敗"
         case .unknownErrorFailed:
             return "不明なエラー"
-        case .couldNotFouneResoureFailed:
+        case .couldNotFoundResoureFailed:
             return "リソースが見つかりませんでした"
         }
     }
     
-    public var errorDescription: String? {
+    public var failureReason: String? {
         switch self {
         case .responseValidationFailed(let failure):
             switch failure {
@@ -85,7 +85,7 @@ extension DKError: LocalizedError {
             return "QRコードの生成に失敗しました. フォーマットが変更された可能性があります."
         case .unknownErrorFailed:
             return "未知のエラーが発生しました."
-        case .couldNotFouneResoureFailed:
+        case .couldNotFoundResoureFailed:
             return "指定された楽曲のデータが見つかりませんでした."
         }
     }
