@@ -27,7 +27,7 @@ public struct QRCode {
         // Validation
         // 文字列が32文字かつ、英数字のみで構成されている
         if code.rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) != nil || bytes.count != 16 {
-            throw DKError.invalidQRCodeError
+            throw DKError.qrCodeGenerationFailed
         }
         
         self.ip = [bytes[0], bytes[4], bytes[8], bytes[12]]

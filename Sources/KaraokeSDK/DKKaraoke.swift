@@ -89,7 +89,7 @@ open class DKKaraoke {
     }
     
     /// FistiaAPIから点数速報データを取得
-    public func getPredictionsDKRanbato(timeLimit: Int, since: Date = Date(), includeNormal: Bool) -> AnyPublisher<Fistia.Prediction.Response, AFError> {
+    public func getPredictionsDKRanbato(timeLimit: Int, since: Date = Date(), includeNormal: Bool) -> AnyPublisher<Fistia.Prediction.Response, DKError> {
         let isLiveDamStadium: Bool = {
             if let credential = credential {
                 return credential.deviceType == .xg7000
@@ -101,7 +101,7 @@ open class DKKaraoke {
     }
     
     /// FistiaAPIから点数速報データを取得
-    public func getScorePredictionCount(timeSpan: Int = 1800, timeLimit: Int = 86400, since: Date = Date()) -> AnyPublisher<Fistia.PredictionCount.Response, AFError> {
+    public func getScorePredictionCount(timeSpan: Int = 1800, timeLimit: Int = 86400, since: Date = Date()) -> AnyPublisher<Fistia.PredictionCount.Response, DKError> {
         // 区切りが良い時間に修正するコード
         let currentTime = (Int(Date().timeIntervalSince1970) / timeSpan) * timeSpan
         let startTime = Date(timeIntervalSince1970: TimeInterval(currentTime))
@@ -110,35 +110,32 @@ open class DKKaraoke {
     }
     
     /// ランキングデータ取得
-    public func ranking(requestNo: Int) -> AnyPublisher<[Ranking.Response], AFError> {
+    public func ranking(requestNo: Int) -> AnyPublisher<[Ranking.Response], DKError> {
         let request = Ranking(requestNo: requestNo)
-        return Future { promise in
-            self.session.request(request)
-                .validate()
-                .validate(contentType: ["text/html"])
-                .cURLDescription { request in
-                    print(request)
+        return session.request(request)
+            .validate()
+            .validate(contentType: ["text/html"])
+            .cURLDescription { request in
+#if DEBUG
+                print(request)
+#endif
+            }
+            .publishData()
+            .value()
+            .tryMap({ response throws -> [Ranking.Response] in
+                guard let html = self.parseToHTML(data: response, encoding: .shiftJIS) else {
+                    throw DKError.responseDataCorrupted
                 }
-                .publishData()
-                .value()
-                .sink(receiveCompletion: { completion in
-                    print(completion)
-                }, receiveValue: { response in
-                    guard let html = self.parseToHTML(data: response, encoding: .shiftJIS) else {
-                        promise(.failure(AFError.responseSerializationFailed(reason: .decodingFailed(error: DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "", underlyingError: nil))))))
-                        return
-                    }
-                    let users = html.xpath("//*[@id=\"Rankingbattle\"]/table[2]/tr[not(@style=\"background:#DFF1FD\")]")
-                    let ranking = users.compactMap({ Ranking.Response(document: $0) })
-                    promise(.success(ranking))
-                })
-                .store(in: &self.task)
-        }
-        .eraseToAnyPublisher()
+                let users = html.xpath("//*[@id=\"Rankingbattle\"]/table[2]/tr[not(@style=\"background:#DFF1FD\")]")
+                let ranking = users.compactMap({ Ranking.Response(document: $0) })
+                return ranking
+            })
+            .mapToDKError()
+            .eraseToAnyPublisher()
     }
     
     /// 認証用のリクエスト
-    internal func authorize(_ request: Connect) -> AnyPublisher<Connect.Response, AFError> {
+    internal func authorize(_ request: Connect) -> AnyPublisher<Connect.Response, DKError> {
         session.request(request)
             .validateWithFuckingDKFormat()
             .validate(contentType: ["application/json"])
@@ -149,22 +146,20 @@ open class DKKaraoke {
             }
             .publishDecodable(type: Connect.Response.self, decoder: decoder)
             .value()
-            .receive(on: DispatchQueue.main, options: nil)
+            .mapToDKError()
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
             }, receiveOutput: { response in
                 /// 認証情報を作成してKeychainに保存
                 let credential: OAuthCredential = OAuthCredential(response: response)
                 self.credential = credential
-            }, receiveCompletion: { _ in
+            }, receiveCompletion: { completion in
                 self.delegate?.sessionIsTerminated()
-            })
-            .handleEvents(receiveOutput: { response in
             })
             .eraseToAnyPublisher()
     }
     
-    public func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, AFError> {
+    public func publish<T: RequestType>(_ request: T) -> AnyPublisher<T.ResponseType, DKError> {
         let interceptor: AuthenticationInterceptor<DKKaraoke>? = {
             switch request {
                 case is Login, is Search, is Detail:
@@ -188,6 +183,7 @@ open class DKKaraoke {
             }
             .publishDecodable(type: T.ResponseType.self, decoder: decoder)
             .value()
+            .mapToDKError()
             .handleEvents(receiveSubscription: { _ in
                 self.delegate?.sessionIsRunning()
             }, receiveCompletion: { _ in
@@ -197,35 +193,35 @@ open class DKKaraoke {
     }
     
     /// リザルト取得
-    public func getDKRanbatoResults(cdmNo: String) -> AnyPublisher<Ranbato.Response, AFError> {
+    public func getDKRanbatoResults(cdmNo: String) -> AnyPublisher<Ranbato.Response, DKError> {
         let request = Ranbato(cdmNo: cdmNo)
         return publish(request)
     }
     
     /// ペアリング
-    public func connect(qrCode: String, cdmNo: String? = nil) -> AnyPublisher<Connect.Response, AFError> {
+    public func connect(qrCode: String, cdmNo: String? = nil) -> AnyPublisher<Connect.Response, DKError> {
         do {
             // 常に最新のQRに変換する
             let qrCode: String = try QRCode(code: qrCode).code
             let request = Connect(qrCode: qrCode, cdmNo: cdmNo)
             return authorize(request)
-        } catch (let error) {
-            return Fail(outputType: Connect.Response.self, failure: AFError.createURLRequestFailed(error: error))
+        } catch {
+            return Fail(outputType: Connect.Response.self, failure: DKError.qrCodeGenerationFailed)
                 .eraseToAnyPublisher()
         }
     }
     
     /// ペアリングを延長する
-    public func update() -> AnyPublisher<Connect.Response, AFError> {
+    public func update() -> AnyPublisher<Connect.Response, DKError> {
         guard let credential = credential else {
-            return Fail(outputType: Connect.Response.self, failure: AFError.createURLRequestFailed(error: DKError.authenticationError))
+            return Fail(outputType: Connect.Response.self, failure: DKError.authenticationFailed)
                 .eraseToAnyPublisher()
         }
         return self.connect(qrCode: credential.code, cdmNo: credential.cdmNo)
     }
     
     /// ペアリング解除
-    public func disconnect() -> AnyPublisher<Disconnect.Response, AFError> {
+    public func disconnect() -> AnyPublisher<Disconnect.Response, DKError> {
         let request = Disconnect()
         return publish(request)
             .handleEvents(receiveCompletion: { completion in
@@ -235,37 +231,37 @@ open class DKKaraoke {
     }
     
     /// サインイン
-    public func signIn(damtomoId: String, password: String) -> AnyPublisher<Login.Response, AFError> {
+    public func signIn(damtomoId: String, password: String) -> AnyPublisher<Login.Response, DKError> {
         let request = Login(damtomoId: damtomoId, password: password)
         return publish(request)
     }
     
     /// 楽曲予約
-    public func request(requestNo: Int, myKey: Int, contentsKind: DKContent = .設定しない) -> AnyPublisher<Request.Response, AFError> {
+    public func request(requestNo: Int, myKey: Int, contentsKind: DKContent = .設定しない) -> AnyPublisher<Request.Response, DKError> {
         let request = Request(reqNo: requestNo, myKey: myKey, contentsKind: contentsKind)
         return publish(request)
     }
     
     /// コマンド送信
-    public func command(command: DKCommand) -> AnyPublisher<Command.Response, AFError> {
+    public func command(command: DKCommand) -> AnyPublisher<Command.Response, DKError> {
         let request = Command(command: command)
         return publish(request)
     }
     
     /// 画像送信
-    public func sendPicture(image: UIImage?, quality: CGFloat = 1.0, size: CGSize = CGSize(width: 1920, height: 1080), backgroundColor: UIColor = .black) -> AnyPublisher<Picture.Response, AFError> {
+    public func sendPicture(image: UIImage?, quality: CGFloat = 1.0, size: CGSize = CGSize(width: 1920, height: 1080), backgroundColor: UIColor = .black) -> AnyPublisher<Picture.Response, DKError> {
         let request = Picture(image: image, quality: quality, size: size, backgroundColor: backgroundColor)
         return publish(request)
     }
     
     /// 楽曲検索
-    public func searchByKeyword(keyword: String, mode: Search.Mode) -> AnyPublisher<Search.Response, AFError> {
+    public func searchByKeyword(keyword: String, mode: Search.Mode) -> AnyPublisher<Search.Response, DKError> {
         let request = Search(keyword: keyword, mode: mode)
         return publish(request)
     }
     
     /// 楽曲詳細情報取得
-    public func getSongDetail(requestNo: String) -> AnyPublisher<Detail.Response, AFError> {
+    public func getSongDetail(requestNo: String) -> AnyPublisher<Detail.Response, DKError> {
         // シリアルを作成
         let serialNo: String = {
             if let credential = credential {
@@ -278,7 +274,7 @@ open class DKKaraoke {
     }
     
     /// アルバム画像取得
-    public func search(songName: String, artistName: String) -> AnyPublisher<URL, AFError> {
+    public func search(songName: String, artistName: String) -> AnyPublisher<URL, DKError> {
         let searchText: String = {
             if artistName.count <= 10 {
                 return "\(songName.normalizedText)+\(artistName)"
@@ -286,36 +282,43 @@ open class DKKaraoke {
             return songName.normalizedText
         }()
         let request = Amazon.Image(searchText: searchText)
-        return Future { promise in
-            self.session.request(request)
-                .validate()
-                .validate(contentType: ["text/html"])
-                .cURLDescription { request in
+        return session.request(request)
+            .validate()
+            .validate(contentType: ["text/html"])
+            .cURLDescription { request in
 #if DEBUG
-                    print(request)
+                print(request)
 #endif
+            }
+            .publishData()
+            .value()
+            .tryMap({ response throws -> URL in
+                guard let html: String = String(data: response, encoding: .utf8),
+                      let mediaURL: String = try? html.matching(pattern: "https://m.media-amazon.com/images/I/([\\S]*654_QL65_).jpg").first,
+                      let imageURL: URL = URL(string: mediaURL)
+                else {
+                    throw DKError.couldNotFouneResoureFailed
                 }
-                .publishData()
-                .value()
-                .sink(receiveCompletion: { completion in
-                }, receiveValue: { response in
-                    guard let html: String = String(data: response, encoding: .utf8),
-                          let mediaURL: String = try? html.matching(pattern: "https://m.media-amazon.com/images/I/([\\S]*654_QL65_).jpg").first,
-                          let imageURL: URL = URL(string: mediaURL)
-                    else {
-                        promise(.failure(AFError.responseValidationFailed(reason: .customValidationFailed(error: DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Invalid resopnse", underlyingError: nil))))))
-                        return
-                    }
-                    promise(.success(imageURL))
-                })
-                .store(in: &self.task)
-        }
-        .eraseToAnyPublisher()
+                return imageURL
+            })
+            .mapToDKError()
+            .eraseToAnyPublisher()
     }
 }
 
 extension String {
     var normalizedText: String {
         self.replacingOccurrences(of: "\\([^\\)]+\\)|\\[[^\\]]+\\]", with: "", options: .regularExpression)
+    }
+}
+
+extension Publisher {
+    func mapToDKError() -> Publishers.MapError<Self, DKError> {
+        mapError({ error -> DKError in
+            guard let error = error as? DKError else {
+                return DKError.unknownErrorFailed
+            }
+            return error
+        })
     }
 }

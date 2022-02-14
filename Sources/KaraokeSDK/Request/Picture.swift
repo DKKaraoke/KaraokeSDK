@@ -41,7 +41,7 @@ public final class Picture: RequestType {
         public let osVer: String
         public let pictureData: String
         public let remoconFlg: String
-        public let result: Result.Picture
+        public let result: DKResult
         public let sendType: String
         public let songCertification: String
         public let substituteBoot: String

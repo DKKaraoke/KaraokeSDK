@@ -44,7 +44,7 @@ public final class Request: RequestType {
         public let myKey: String
         public let osVer: String
         public let reqNo: String
-        public let result: Result.Request
+        public let result: DKResult
         public let sendDate: String
     }
 }

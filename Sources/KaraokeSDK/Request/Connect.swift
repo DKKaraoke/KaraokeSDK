@@ -36,7 +36,7 @@ public final class Connect: RequestType {
         public let lastSendTerm: String
         public let osVer: String
         public let remoconFlg: String
-        public let result: Result.Login
+        public let result: DKResult
         public let songCertification: String
         public let substituteBoot: String
     }

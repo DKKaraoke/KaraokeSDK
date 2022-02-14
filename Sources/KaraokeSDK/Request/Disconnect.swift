@@ -29,7 +29,7 @@ public final class Disconnect: RequestType {
         public let deviceNm: String
         public let osVer: String
         public let ipAdr: String
-        public let result: Result.Logout
+        public let result: DKResult
         public let serialNo: String
         public let songCertification: String
         public let substituteBoot: String
