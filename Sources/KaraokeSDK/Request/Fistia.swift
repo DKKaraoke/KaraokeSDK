@@ -15,11 +15,12 @@ public enum Fistia {
         public var method: HTTPMethod = .get
         public var path: String = "_score_predictions"
         public var baseURL: URL = {
-            #if DEBUG
             return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
-            #else
-            return URL(string: "https://entei-kun.proj.tokyo/api/")!
-            #endif
+//            #if DEBUG
+//            return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
+//            #else
+//            return URL(string: "https://entei-kun.proj.tokyo/api/")!
+//            #endif
         }()
         public var parameters: Parameters
         public var encoding: ParameterEncoding = URLEncoding.queryString
@@ -53,20 +54,24 @@ public enum Fistia {
         }
         
         public class ScorePrediction: Codable {
-            #if DEBUG
             public let time: String
             public let scoreInteger: Int
             public let scoreString: String
             public let scoreType: ScoreType
-            #else
-            public let time: String
-            public let timeOffset: Int
-            public let scoreInteger: Int
-            public let scoreString: String
-            public let is100: Bool
-            public let isQuadruple: Bool
-            public let isNormal: Bool
-            #endif
+//            #if DEBUG
+//            public let time: String
+//            public let scoreInteger: Int
+//            public let scoreString: String
+//            public let scoreType: ScoreType
+//            #else
+//            public let time: String
+//            public let timeOffset: Int
+//            public let scoreInteger: Int
+//            public let scoreString: String
+//            public let is100: Bool
+//            public let isQuadruple: Bool
+//            public let isNormal: Bool
+//            #endif
         }
         
         public enum ScoreType: String, CaseIterable, Codable {
