@@ -15,11 +15,11 @@ public enum Fistia {
         public var method: HTTPMethod = .get
         public var path: String = "_score_predictions"
         public var baseURL: URL = {
-            return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
+            return URL(string: "https://entei-kun-api.proj.tokyo/")!
 //            #if DEBUG
-//            return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
+//            return URL(string: "https://entei-kun-dev-api.proj.tokyo/")!
 //            #else
-//            return URL(string: "https://entei-kun.proj.tokyo/api/")!
+//            return URL(string: "https://entei-kun-api.proj.tokyo/api/")!
 //            #endif
         }()
         public var parameters: Parameters
@@ -37,7 +37,7 @@ public enum Fistia {
             includeNormal: Bool = false,
             includeQuadruple: Bool = true,
             include100: Bool = true,
-            isLiveDamStadium: Bool = false
+            isJst: Bool = false
         ) {
             self.parameters = [
                 "startTime": dateFormatter.string(from: startTime),
@@ -45,7 +45,7 @@ public enum Fistia {
                 "includeNormal": includeNormal.description,
                 "includeQuadruple": includeQuadruple.description,
                 "include100": include100.description,
-                "isLiveDamStadium": isLiveDamStadium.description
+                "isJst": isJst.description
             ]
         }
         
@@ -119,8 +119,8 @@ public enum Fistia {
         public struct ScorePredictionCount: Codable {
             public let startTime: String
             public let endTime: String
-            public let liveDam: ScoreDistribution
-            public let liveDamStadium: ScoreDistribution
+            public let utc: ScoreDistribution
+            public let jst: ScoreDistribution
         }
         
         // MARK: - ScoreDistribution
