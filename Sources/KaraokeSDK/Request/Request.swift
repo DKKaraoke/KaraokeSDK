@@ -13,7 +13,7 @@ public final class Request: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamSendServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone.current

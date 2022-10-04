@@ -14,7 +14,7 @@ public final class Picture: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamPictureSendServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
 
     init(image: UIImage?, quality: CGFloat, size: CGSize, backgroundColor: UIColor) {
         self.parameters = [

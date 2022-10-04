@@ -110,28 +110,9 @@ open class DKKaraoke {
     }
     
     /// ランキングデータ取得
-    public func ranking(requestNo: Int) -> AnyPublisher<[Ranking.Response], DKError> {
+    public func ranking(requestNo: Int) -> AnyPublisher<Ranking.Response, DKError> {
         let request = Ranking(requestNo: requestNo)
-        return session.request(request)
-            .validate()
-            .validate(contentType: ["text/html"])
-            .cURLDescription { request in
-#if DEBUG
-                print(request)
-#endif
-            }
-            .publishData()
-            .value()
-            .tryMap({ response throws -> [Ranking.Response] in
-                guard let html = self.parseToHTML(data: response, encoding: .shiftJIS) else {
-                    throw DKError.responseDataCorrupted
-                }
-                let users = html.xpath("//*[@id=\"Rankingbattle\"]/table[2]/tr[not(@style=\"background:#DFF1FD\")]")
-                let ranking = users.compactMap({ Ranking.Response(document: $0) })
-                return ranking
-            })
-            .mapToDKError(delegate: delegate)
-            .eraseToAnyPublisher()
+        return publish(request)
     }
     
     /// 認証用のリクエスト

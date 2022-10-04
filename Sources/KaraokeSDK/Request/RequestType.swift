@@ -16,7 +16,7 @@ public protocol RequestType: URLRequestConvertible {
     var baseURL: URL { get }
     var path: String { get }
     var encoding: ParameterEncoding { get }
-    var parameters: Parameters { get set }
+    var parameters: Parameters? { get }
 }
 
 extension RequestType {
@@ -33,7 +33,10 @@ extension RequestType {
         let deviceId: String = UIDevice.current.identifierForVendor!.uuidString.data(using: .utf8)!.base64EncodedString().lowercased()
         var request = try URLRequest(url: url, method: method, headers: nil)
         request.timeoutInterval = TimeInterval(10)
-        let parameters = parameters.merging(["deviceId": deviceId], uniquingKeysWith: { (_, new) in new } )
-        return try encoding.encode(request, with: parameters)
+        if let parameters = parameters {
+            let parameters = parameters.merging(["deviceId": deviceId], uniquingKeysWith: { (_, new) in new } )
+            return try encoding.encode(request, with: parameters)
+        }
+        return request
     }
 }

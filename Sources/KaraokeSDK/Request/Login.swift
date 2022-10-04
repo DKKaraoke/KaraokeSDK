@@ -14,7 +14,7 @@ public final class Login: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamDAMTomoLoginServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
 
     init(damtomoId: String, password: String) {
         self.parameters = [

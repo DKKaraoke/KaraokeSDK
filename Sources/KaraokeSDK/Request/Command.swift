@@ -13,7 +13,7 @@ public final class Command: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamRemoconSendServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
 
     init(command: DKCommand) {
         self.parameters = [

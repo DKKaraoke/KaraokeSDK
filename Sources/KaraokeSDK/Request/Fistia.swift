@@ -22,7 +22,7 @@ public enum Fistia {
 //            return URL(string: "https://entei-kun.proj.tokyo/api/")!
 //            #endif
         }()
-        public var parameters: Parameters
+        public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
         let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
@@ -89,7 +89,7 @@ public enum Fistia {
         public var baseURL: URL = {
             return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
         }()
-        public var parameters: Parameters
+        public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
         let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()

@@ -13,7 +13,7 @@ public final class Search: RequestType {
     
     public var method: HTTPMethod = .post
     public var baseURL: URL = URL(string: "https://csgw.clubdam.com/dkwebsys/search-api/")!
-    public var parameters: Parameters
+    public var parameters: Parameters?
     public var path: String
     
     init(keyword: String, mode: Mode) {

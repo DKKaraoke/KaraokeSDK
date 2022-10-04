@@ -17,7 +17,7 @@ public extension DataRequest {
                 guard let data = data else {
                     throw DKError.responseDataCorrupted
                 }
-                
+
                 guard let result = try? decoder.decode(ValidationModel.self, from: data) else {
                     return
                 }

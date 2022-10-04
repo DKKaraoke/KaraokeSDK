@@ -14,7 +14,7 @@ public final class Connect: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamConnectServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
 
     init(qrCode: String, cdmNo: String? = nil) {
         /// ペアリングするときはQRCodeの値がわかっていないので強制的に代入

@@ -14,7 +14,7 @@ public final class Disconnect: RequestType {
     
     public var method: HTTPMethod = .post
     public var path: String = "DkDamSeparateServlet"
-    public var parameters: Parameters
+    public var parameters: Parameters?
 
     init() {
         self.parameters = [

@@ -16,7 +16,7 @@ public enum Amazon {
         public var method: HTTPMethod = .get
         public var baseURL: URL = URL(string: "https://www.amazon.co.jp/")!
         public var path: String = "s"
-        public var parameters: Parameters
+        public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
         
         init(searchText: String) {
