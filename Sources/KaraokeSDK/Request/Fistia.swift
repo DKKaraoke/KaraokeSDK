@@ -24,12 +24,18 @@ public enum Fistia {
         }()
         public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
-        let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
+
+        let dateFormatter: ISO8601DateFormatter = {
+            let formatter = ISO8601DateFormatter()
             formatter.timeZone = TimeZone.current
-            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             return formatter
         }()
+//        let dateFormatter: DateFormatter = {
+//            let formatter = DateFormatter()
+//            formatter.timeZone = TimeZone.current
+//            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+//            return formatter
+//        }()
 
         init(
             startTime: Date = Date(),
@@ -91,10 +97,10 @@ public enum Fistia {
         }()
         public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
-        let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
+
+        let dateFormatter: ISO8601DateFormatter = {
+            let formatter = ISO8601DateFormatter()
             formatter.timeZone = TimeZone.current
-            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             return formatter
         }()
 
