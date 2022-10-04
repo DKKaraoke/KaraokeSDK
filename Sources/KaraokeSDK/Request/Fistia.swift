@@ -87,7 +87,7 @@ public enum Fistia {
         public var method: HTTPMethod = .get
         public var path: String = "_score_prediction_count"
         public var baseURL: URL = {
-            return URL(string: "https://api-dev-entei-kun.proj.tokyo/")!
+            return URL(string: "https://entei-kun-api.proj.tokyo/")!
         }()
         public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
