@@ -90,13 +90,13 @@ open class DKKaraoke {
     
     /// FistiaAPIから点数速報データを取得
     public func getPredictionsDKRanbato(timeLimit: Int, since: Date = Date(), includeNormal: Bool) -> AnyPublisher<Fistia.Prediction.Response, DKError> {
-        let isLiveDamStadium: Bool = {
+        let isJst: Bool = {
             if let credential = credential {
                 return credential.deviceType == .xg7000
             }
             return false
         }()
-        let request = Fistia.Prediction(startTime: since, timeLimit: timeLimit, includeNormal: includeNormal, isLiveDamStadium: isLiveDamStadium)
+        let request = Fistia.Prediction(startTime: since, timeLimit: timeLimit, includeNormal: includeNormal, isJst: isJst)
         return publish(request)
     }
     
