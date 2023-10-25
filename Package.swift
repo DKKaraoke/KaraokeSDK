@@ -10,7 +10,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "KaraokeSDK",
-            targets: ["KaraokeSDK"]),
+            targets: ["KaraokeSDK"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -18,15 +18,17 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.5.0")),
         .package(url: "https://github.com/tid-kijyun/Kanna.git", .upToNextMajor(from: "5.2.7")),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "4.2.2")),
+        .package(url: "https://github.com/realm/SwiftLint.git", .upToNextMajor(from: "0.53.0"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "KaraokeSDK",
-            dependencies: ["Alamofire", "Kanna", "KeychainAccess"]),
+            dependencies: ["Alamofire", "Kanna", "KeychainAccess"],
+            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]),
         .testTarget(
             name: "KaraokeSDKTests",
-            dependencies: ["KaraokeSDK"]),
+            dependencies: ["KaraokeSDK"])
     ]
 )
