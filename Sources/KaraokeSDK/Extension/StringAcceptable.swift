@@ -10,7 +10,7 @@ import Foundation
 @propertyWrapper
 public struct StringAcceptable<T: LosslessStringConvertible> where T: Codable {
     public var wrappedValue: T
-    
+
     public init(wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
@@ -21,7 +21,7 @@ extension StringAcceptable: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(String(wrappedValue))
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let wrappedValue = try? container.decode(T.self) {
@@ -70,7 +70,7 @@ extension Bool {
 @propertyWrapper
 public struct NullAcceptable<T: Codable> where T: LosslessStringConvertible {
     public var wrappedValue: T?
-    
+
     public init(wrappedValue: T?) {
         self.wrappedValue = wrappedValue
     }

@@ -12,23 +12,23 @@ import Kanna
 public enum Amazon {
     final public class Image: RequestType {
         public typealias ResponseType = Response
-        
+
         public var method: HTTPMethod = .get
         public var baseURL: URL = URL(string: "https://www.amazon.co.jp/")!
         public var path: String = "s"
         public var parameters: Parameters?
         public var encoding: ParameterEncoding = URLEncoding.queryString
-        
+
         init(searchText: String) {
             self.parameters = [
                 "k": searchText,
                 "i": "digital-music"
             ]
         }
-        
+
         public class Response: Codable, Identifiable {
             public let imageURL: URL
-            
+
             internal init?(document: XMLElement) {
                 guard let srcset = document["srcset"],
                       let imageURL = try? srcset.matching(pattern: "(https://m.media-amazon.com/images/I/[\\S]*)").compactMap({ URL(string: $0) }).last
@@ -38,7 +38,7 @@ public enum Amazon {
                 self.imageURL = imageURL
             }
         }
-        
+
         public func asURLRequest() throws -> URLRequest {
             let url = baseURL.appendingPathComponent(path)
             var request = try URLRequest(url: url, method: method, headers: nil)

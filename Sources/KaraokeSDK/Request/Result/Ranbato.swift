@@ -10,18 +10,18 @@ import Alamofire
 
 public final class Ranbato: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .get
     public var path: String = "DkDamContentsHistoryServlet"
     public var parameters: Parameters?
-    
+
     init(cdmNo: String) {
         self.parameters = [
             "categoryCd": "080100",
-            "cdmNo": cdmNo,
+            "cdmNo": cdmNo
         ]
     }
-    
+
     // MARK: - Response
     public class Response: Codable {
         public let contentsHistoryList: [ContentsHistoryList]

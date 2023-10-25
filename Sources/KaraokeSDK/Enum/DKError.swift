@@ -55,7 +55,7 @@ extension DKError: LocalizedError {
             return "リソースが見つかりませんでした"
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
         case .responseValidationFailed(let failure):

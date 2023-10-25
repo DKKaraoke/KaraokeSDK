@@ -10,17 +10,17 @@ import Alamofire
 
 public final class Command: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamRemoconSendServlet"
     public var parameters: Parameters?
 
     init(command: DKCommand) {
         self.parameters = [
-            "remoconCode": command.rawValue,
+            "remoconCode": command.rawValue
         ]
     }
-    
+
     public struct Response: Codable {
         public let QRcode: String
         public let appVer: String

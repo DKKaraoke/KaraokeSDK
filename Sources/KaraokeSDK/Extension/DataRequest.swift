@@ -11,7 +11,7 @@ import Alamofire
 public extension DataRequest {
     @discardableResult
     func validateWithFuckingDKFormat() -> Self {
-        validate({ _, response, data in
+        validate({ _, _, data in
             DataRequest.ValidationResult(catching: {
                 let decoder: JSONDecoder = JSONDecoder()
                 guard let data = data else {
@@ -21,7 +21,7 @@ public extension DataRequest {
                 guard let result = try? decoder.decode(ValidationModel.self, from: data) else {
                     return
                 }
-                
+
                 switch result.result {
                 case .successLogin, .successConnect, .successPicture, .successRemocon, .successDisconnect:
                     break

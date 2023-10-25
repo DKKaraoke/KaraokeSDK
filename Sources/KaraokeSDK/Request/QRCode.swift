@@ -15,7 +15,7 @@ public struct QRCode {
     /// UNIXタイムスタンプ
     public let timestamp: Int
     public let publishedTime: String
-    
+
     public init(code: String) throws {
         let formatter: DateFormatter = {
             let formatter = DateFormatter()
@@ -29,7 +29,7 @@ public struct QRCode {
         if code.rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) != nil || bytes.count != 16 {
             throw DKError.qrCodeGenerationFailed
         }
-        
+
         self.ip = [bytes[0], bytes[4], bytes[8], bytes[12]]
             .compactMap({ UInt8($0, radix: 16) }).map({ String(format: "%03d", $0) }).joined(separator: ".")
         self.serial = [bytes[9], bytes[11], bytes[13], bytes[15], bytes[1], bytes[3], bytes[5], bytes[7]]
@@ -37,7 +37,7 @@ public struct QRCode {
         self.timestamp = Int([bytes[14], bytes[10], bytes[6], bytes[2]].joined(separator: ""), radix: 16)!
         self.publishedTime = formatter.string(from: Date(timeIntervalSince1970: Double(self.timestamp)))
     }
-    
+
     public var code: String {
         let ip: [String] = self.ip.split(separator: ".").compactMap({ UInt8($0) }).compactMap({ String(format: "%02X", $0)})
         let serial: [String] = self.serial.chunked(by: 2)

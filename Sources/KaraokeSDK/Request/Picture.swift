@@ -11,7 +11,7 @@ import UIKit
 
 public final class Picture: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamPictureSendServlet"
     public var parameters: Parameters?
@@ -22,14 +22,14 @@ public final class Picture: RequestType {
             "pictureData": image.asPictureData(size: size, quality: quality, backgroundColor: backgroundColor)
         ]
     }
-    
+
     init() {
         self.parameters = [
             "sendType": "2",
             "pictureData": ""
         ]
     }
-    
+
     public struct Response: Codable {
         public let QRcode: String
         public let appVer: String
@@ -46,7 +46,7 @@ public final class Picture: RequestType {
         public let songCertification: String
         public let substituteBoot: String
     }
-    
+
     public struct ConnectionEquip: Codable {
         public let equip1: String
         public let equip10: String

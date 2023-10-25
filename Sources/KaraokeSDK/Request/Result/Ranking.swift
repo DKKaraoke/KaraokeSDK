@@ -14,7 +14,7 @@ final public class Ranking: RequestType {
 
     public var method: HTTPMethod = .get
     public var baseURL: URL = URL(string: "https://dkranbato.herokuapp.com/")!
-    public var parameters: Parameters? = nil
+    public var parameters: Parameters?
     public var path: String
 
     init(requestNo: Int) {

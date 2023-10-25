@@ -11,7 +11,7 @@ import UIKit
 
 public final class Connect: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamConnectServlet"
     public var parameters: Parameters?
@@ -27,7 +27,7 @@ public final class Connect: RequestType {
         ]
         self.parameters = parameters.compactMapValues({ $0 })
     }
-    
+
     public struct Response: Codable {
         public let QRcode: String
         public let cdmNo: String

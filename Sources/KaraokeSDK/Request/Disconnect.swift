@@ -11,17 +11,17 @@ import UIKit
 
 public final class Disconnect: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamSeparateServlet"
     public var parameters: Parameters?
 
     init() {
         self.parameters = [
-            "deviceId": UIDevice.current.identifierForVendor!.uuidString.data(using: .utf8)!.base64EncodedString().lowercased(),
+            "deviceId": UIDevice.current.identifierForVendor!.uuidString.data(using: .utf8)!.base64EncodedString().lowercased()
         ]
     }
-    
+
     public struct Response: Codable {
         public let QRcode: String
         public let cdmNo: String

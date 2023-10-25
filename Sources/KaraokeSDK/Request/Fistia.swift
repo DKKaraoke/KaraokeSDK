@@ -11,7 +11,7 @@ import Alamofire
 public enum Fistia {
     public final class Prediction: RequestType {
         public typealias ResponseType = Response
-        
+
         public var method: HTTPMethod = .get
         public var path: String = "_score_predictions"
         public var baseURL: URL = {
@@ -54,11 +54,11 @@ public enum Fistia {
                 "isJst": isJst.description
             ]
         }
-        
+
         public class Response: Codable {
             public let scorePredictions: [ScorePrediction]
         }
-        
+
         public class ScorePrediction: Codable {
             public let time: String
             public let scoreInteger: Int
@@ -79,17 +79,17 @@ public enum Fistia {
 //            public let isNormal: Bool
 //            #endif
         }
-        
+
         public enum ScoreType: String, CaseIterable, Codable {
             case hundred    = "Hundred"
             case quadruple  = "Quadruple"
             case normal     = "Normal"
         }
     }
-    
+
     public final class PredictionCount: RequestType {
         public typealias ResponseType = Response
-        
+
         public var method: HTTPMethod = .get
         public var path: String = "_score_prediction_count"
         public var baseURL: URL = {
@@ -115,12 +115,12 @@ public enum Fistia {
                 "timeSpan": timeSpan
             ]
         }
-        
+
         // MARK: - Result
         public struct Response: Codable {
             public let scorePredictionCount: [ScorePredictionCount]
         }
-        
+
         // MARK: - ScorePredictionCount
         public struct ScorePredictionCount: Codable {
             public let startTime: String
@@ -128,7 +128,7 @@ public enum Fistia {
             public let utc: ScoreDistribution
             public let jst: ScoreDistribution
         }
-        
+
         // MARK: - ScoreDistribution
         public struct ScoreDistribution: Codable {
             public let hundredCount: Int

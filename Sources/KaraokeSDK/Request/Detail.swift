@@ -10,12 +10,12 @@ import Alamofire
 
 public final class Detail: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var baseURL: URL = URL(string: "https://csgw.clubdam.com/dkwebsys/search-api/")!
     public var parameters: Parameters?
     public var path: String = "GetMusicDetailInfoApi"
-    
+
     init(requestNo: String, serialNo: String) {
         self.parameters = [
             "authKey": "2/Qb9R@8s*",
@@ -25,19 +25,19 @@ public final class Detail: RequestType {
             "serialNo": serialNo
         ]
     }
-    
+
     // MARK: - Result
     public struct Response: Codable {
         public let result: ResultClass
         public let data: DataClass
         public let list: [List]
     }
-    
+
     // MARK: - List
     public struct List: Codable {
         public let kModelMusicInfoList: [KModelMusicInfoList]
     }
-    
+
     // MARK: - KModelMusicInfoList
     public struct KModelMusicInfoList: Codable {
         public let highlightTieUp: String?
@@ -49,7 +49,7 @@ public final class Detail: RequestType {
         public let playbackTime: Int
         public let eachModelMusicInfoList: [EachModelMusicInfoList]
     }
-    
+
     // MARK: - EachModelMusicInfoList
     public struct EachModelMusicInfoList: Codable {
         public let karaokeModelNum: String
@@ -74,7 +74,7 @@ public final class Detail: RequestType {
         @StringAcceptable public var damTomoRecordingFlag: Bool
         @StringAcceptable public var myListFlag: Bool
     }
-    
+
     // MARK: - DataClass
     public struct DataClass: Codable {
         public let artistCode: Int
@@ -83,7 +83,7 @@ public final class Detail: RequestType {
         public let title: String
         public let titleYomiKana: String
         public let firstLine: String
-        
+
         enum CodingKeys: String, CodingKey {
             case artistCode
             case artist
@@ -92,10 +92,10 @@ public final class Detail: RequestType {
             case titleYomiKana = "titleYomi_Kana"
             case firstLine
         }
-        
+
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            
+
             self.artistCode = try container.decode(Int.self, forKey: .artistCode)
             self.artist = try container.decode(String.self, forKey: .artist)
             self.requestNo = try container.decode(String.self, forKey: .requestNo)
@@ -104,11 +104,10 @@ public final class Detail: RequestType {
             self.firstLine = try container.decode(String.self, forKey: .firstLine)
         }
     }
-    
+
     // MARK: - ResultClass
     public struct ResultClass: Codable {
         public let statusCode: String
         public let message: String
     }
 }
-

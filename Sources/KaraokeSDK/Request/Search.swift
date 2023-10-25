@@ -10,12 +10,12 @@ import Alamofire
 
 public final class Search: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var baseURL: URL = URL(string: "https://csgw.clubdam.com/dkwebsys/search-api/")!
     public var parameters: Parameters?
     public var path: String
-    
+
     init(keyword: String, mode: Mode) {
         self.path = mode.rawValue
         self.parameters = [
@@ -28,13 +28,13 @@ public final class Search: RequestType {
             "modelTypeCode": 3
         ]
     }
-    
+
     public struct Response: Codable {
         public let result: ResultClass
         public let data: DataClass
         public let list: [List]
     }
-    
+
     // MARK: - List
     public struct List: Codable {
         public let requestNo: String
@@ -67,7 +67,7 @@ public final class Search: RequestType {
         public let playbackTime: Int?
         public let highlightLyrics: String?
     }
-    
+
     // MARK: - DataClass
     public struct DataClass: Codable {
         public let pageCount: Int
@@ -78,7 +78,7 @@ public final class Search: RequestType {
         public let keyword: String
         public let totalCount: Int
     }
-    
+
     // MARK: - ResultClass
     public struct ResultClass: Codable {
         public let statusCode: String

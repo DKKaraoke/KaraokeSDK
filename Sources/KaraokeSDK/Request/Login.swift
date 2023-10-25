@@ -11,7 +11,7 @@ import UIKit
 
 public final class Login: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamDAMTomoLoginServlet"
     public var parameters: Parameters?
@@ -19,10 +19,10 @@ public final class Login: RequestType {
     init(damtomoId: String, password: String) {
         self.parameters = [
             "password": password,
-            "damtomoId": damtomoId,
+            "damtomoId": damtomoId
         ]
     }
-    
+
     public struct Response: Codable {
         public let cdmNo: String
         let damtomoId: String
@@ -31,7 +31,7 @@ public final class Login: RequestType {
         let result: DKResult
         let serialNo: String
         public let myContents: MyContents
-        
+
         // MARK: - MyContents
         public struct MyContents: Codable {
             public let myHistoryList: [MyList]
@@ -85,7 +85,7 @@ extension KeyedDecodingContainer {
         }
         throw DecodingError.typeMismatch(T.self, .init(codingPath: self.codingPath, debugDescription: "Expected to decode `\(T.self)/String` but found a `Unknown` instead.", underlyingError: nil))
     }
-    
+
     func decodeIfPresentAccaptable<T: Decodable>(_ type: T.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> T? where T: LosslessStringConvertible {
         // その型に変換できたらそのまま返す
         if let rawValue = try? decode(T.self, forKey: key) {

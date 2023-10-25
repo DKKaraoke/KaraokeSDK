@@ -10,7 +10,7 @@ import Alamofire
 
 public final class Request: RequestType {
     public typealias ResponseType = Response
-    
+
     public var method: HTTPMethod = .post
     public var path: String = "DkDamSendServlet"
     public var parameters: Parameters?
@@ -20,7 +20,7 @@ public final class Request: RequestType {
         formatter.dateFormat = "YYYY/MM/dd HH:mm:ss"
         return formatter
     }()
-    
+
     init(reqNo: Int, myKey: Int, interrupt: Int = 0, contentsKind: DKContent) {
         let parameters: [String: Any?] = [
             "reqNo": reqNo,
@@ -31,7 +31,7 @@ public final class Request: RequestType {
         ]
         self.parameters = parameters.compactMapValues({ $0 })
     }
-    
+
     public struct Response: Codable {
         public let QRcode: String
         public let appVer: String
