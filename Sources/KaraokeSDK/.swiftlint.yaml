@@ -1,0 +1,12 @@
+opt_in_rules:
+  - file_header
+
+file_header:
+  required_pattern: |
+    \/\/
+    \/\/  .*?\.swift
+    \/\/  KaraokeSDK
+    \/\/
+    \/\/  Created by .*? on \d{4}\/\d{2}\/\d{2}\.
+    \/\/  Copyright © \d{4} Magi, Corporation\. All rights reserved\.
+    \/\/
