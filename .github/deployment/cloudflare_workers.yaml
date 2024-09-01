@@ -1,0 +1,28 @@
+name: Deploy to Cloudflare Workers 
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  deploy:
+    name: Cloudflare Workers
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+      - name: Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

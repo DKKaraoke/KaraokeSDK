@@ -1,0 +1,38 @@
+//
+//  DataRequest.swift
+//
+//
+//  Created by devonly on 2022/01/01.
+//
+
+import Alamofire
+import Foundation
+
+public extension DataRequest {
+    @discardableResult
+    func validateWithFuckingDKFormat() -> Self {
+        validate { _, _, data in
+            DataRequest.ValidationResult(catching: {
+                let decoder = JSONDecoder()
+                guard let data else {
+                    throw DKError.responseDataCorrupted
+                }
+
+                guard let result = try? decoder.decode(ValidationModel.self, from: data) else {
+                    return
+                }
+
+                switch result.result {
+                    case .successLogin, .successConnect, .successPicture, .successRemocon, .successDisconnect:
+                        break
+                    default:
+                        throw DKError.responseValidationFailed(result.result)
+                }
+            })
+        }
+    }
+}
+
+struct ValidationModel: Codable {
+    let result: DKResult
+}

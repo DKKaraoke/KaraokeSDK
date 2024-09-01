@@ -1,0 +1,19 @@
+services:
+  swift:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SWIFT_VERSION: '5.10'
+    volumes:
+      - swiftpm:/home/vscode/app/.swiftpm
+      - ../:/home/vscode/app:cached
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    tty: true
+    stdin_open: true
+
+volumes:
+  swiftpm:

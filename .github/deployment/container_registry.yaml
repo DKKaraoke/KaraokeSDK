@@ -1,0 +1,55 @@
+name: Deploy to Container Registry
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  deploy:
+    name: Container Registry
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ github.ref }}-${{ github.sha }}
+            ${{ github.ref }}
+            refs/head/main
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Get Version
+        id: current_version
+        run: |
+          echo "version=$(cat package.json | jq -r '.version')" >> $GITHUB_OUTPUT
+      - name: Create tag
+        id: current_time
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      - name: Build and Push Docker Image
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.current_version.outputs.version }}
+            ghcr.io/${{ github.repository }}:${{ steps.current_time.outputs.date }}
+            ghcr.io/${{ github.repository }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache

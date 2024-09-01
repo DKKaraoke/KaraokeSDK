@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+exec < /dev/tty && bun cz --hook || true

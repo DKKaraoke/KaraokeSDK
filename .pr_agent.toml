@@ -1,0 +1,40 @@
+[github_app]
+handle_pr_actions = [
+  'opened',
+  'reopened',
+  'ready_for_review',
+  'review_requested',
+]
+pr_commands = [
+  '/describe --pr_description.final_update_message=false',
+  '/review --pr_reviewer.num_code_suggestions=0',
+]
+handle_push_trigger = true
+push_commands = ['/describe', '/review --pr_reviewer.num_code_suggestions=0']
+
+[pr_code_suggestions]
+max_context_tokens = 10000
+num_code_suggestions = 4
+
+[pr_description]
+auto_describe = true
+auto_improve = true
+auto_review = true
+collapsible_file_list = true
+enable_semantic_files_types = true
+generate_ai_title = false
+include_generated_by_header = true
+inline_file_summary = true
+use_description_markers = true
+
+[pr_reviewer]
+require_score_review = true
+require_tests_review = true
+num_code_suggestions = 0
+inline_code_comments = true
+
+[config]
+verbosity_level = 2
+model = 'gpt-4o-mini'
+model_turbo = 'gpt-4o-mini'
+fallback_models = ['gpt-4o-mini']

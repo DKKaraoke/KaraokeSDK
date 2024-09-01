@@ -1,0 +1,44 @@
+{
+  "name": "KaraokeSDK",
+  "dockerComposeFile": [
+    "docker-compose.yaml"
+  ],
+  "service": "swift",
+  "workspaceFolder": "/home/vscode/app",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers/features/node:1.5.0": {
+      "version": "20.16.0"
+    },
+    "ghcr.io/michidk/devcontainers-features/bun:1": {},
+    "ghcr.io/swift-server-community/swift-devcontainer-features/SwiftFormat:0": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "2.37.0"
+    },
+    "ghcr.io/dhoeric/features/act:1": {
+      "version": "0.2.65"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+  "postAttachCommand": "/bin/zsh .devcontainer/postAttachCommand.sh",
+  "postCreateCommand": "/bin/zsh .devcontainer/postCreateCommand.sh",
+  "postStartCommand": "/bin/zsh .devcontainer/postStartCommand.sh",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "lldb.library": "/usr/lib/liblldb.so"
+      },
+      "extensions": [
+        "GitHub.copilot",
+        "sswg.swift-lang"
+      ]
+    }
+  }
+}

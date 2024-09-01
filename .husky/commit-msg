@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+bun commitlint --edit "$1"
